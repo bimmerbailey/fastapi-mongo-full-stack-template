@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+
+  frontend:
+    build: 
+      context: ./frontend
+      target: build
+    volumes:
+      - "./frontend:/frontend"
+    ports:
+      - "3000:3000"
+  
+  backend:
+    build: ./backend
+    depends_on:
+      - "mongo"
+    ports:
+      - "8000:8000"
+    volumes:
+    - "./backend:/backend"
+
+  mongo:
+    image: mongo:6.0.3
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongod
+      MONGO_INITDB_ROOT_PASSWORD: Password123!
+      MONGO_INITDB_DATABASE: your_app
+    volumes:
+      - "mongo:/data/db"
+      - "./dev/init-db.js:/docker-entrypoint-initdb.d/init-db.js"
+    ports:
+      - "27017:27017"
+    restart: unless-stopped
+
+volumes:
+  mongo:
