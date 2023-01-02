@@ -1,6 +1,6 @@
 import pytest
 from jose import jwt
-from fastapi.testclient import TestClient
+from httpx import AsyncClient
 
 from app import schemas
 from app.config.config import settings
@@ -10,7 +10,7 @@ auth_url = "/api/v1/login"
 
 
 @pytest.mark.anyio
-async def test_create_user(client):
+async def test_create_user(client: AsyncClient):
     res = await client.post(
         users_url, json={"email": "hello123@gmail.com", "password": "password123"})
     new_user = schemas.users.UserOut(**res.json())
@@ -19,7 +19,7 @@ async def test_create_user(client):
 
 
 @pytest.mark.anyio
-async def test_login_user(client, regular_user):
+async def test_login_user(client: AsyncClient, regular_user: dict):
     res = await client.post(
         auth_url, data={"username": regular_user['email'], "password": regular_user['password']})
     login_res = schemas.users.Token(**res.json())
@@ -32,7 +32,7 @@ async def test_login_user(client, regular_user):
 
 
 @pytest.mark.anyio
-async def test_admin(client: TestClient, admin_user):
+async def test_admin(client: AsyncClient, admin_user: dict):
     res = await client.post(
         auth_url, data={"username": admin_user['email'], "password": admin_user['password']})
     login_res = schemas.users.Token(**res.json())
@@ -41,7 +41,7 @@ async def test_admin(client: TestClient, admin_user):
 
 
 @pytest.mark.anyio
-async def test_regular_user(client: TestClient, regular_user):
+async def test_regular_user(client: AsyncClient, regular_user: dict):
     res = await client.post(
         auth_url, data={"username": regular_user['email'], "password": regular_user['password']})
     login_res = schemas.users.Token(**res.json())
@@ -57,7 +57,7 @@ async def test_regular_user(client: TestClient, regular_user):
     (None, 'password123', 422),
     ('michael@gmail.com', None, 422)
 ])
-async def test_incorrect_login(client, email, password, status_code):
+async def test_incorrect_login(client: AsyncClient, email: str, password: str, status_code: int):
     res = await client.post(
         auth_url, data={"username": email, "password": password})
 

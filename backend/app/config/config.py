@@ -14,7 +14,8 @@ class Settings(BaseSettings):
     url_base = os.environ.get("URL_BASE", "localhost")
 
     database_url = os.environ.get("DATABASE_URL",
-                                  f"mongodb://app_user:password@mongo/{database_name}?retryWrites=true&w=majority")
+                                  f"mongodb://{database_username}:{database_password}@{database_hostname}/"
+                                  f"{database_name}?retryWrites=true&w=majority")
 
 
 settings = Settings()

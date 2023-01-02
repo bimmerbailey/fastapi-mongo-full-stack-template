@@ -16,7 +16,7 @@ class CRUDUser(CrudBase[User, UserCreate, UserUpdate]):
             return None
         return self.model(**one_user)
 
-    async def get_users(self, session: AsyncIOMotorClient, skip: int = 0, limit: int = 20) -> list[User]:
+    async def get_users(self, session: AsyncIOMotorClient, skip: int = 0, limit: int = 20) -> Optional[list[User]]:
         users = await session["users"].find({}, skip=skip, limit=limit).to_list(length=limit)
         return [self.model(**i) for i in users]
 
