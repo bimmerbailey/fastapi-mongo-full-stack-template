@@ -1,4 +1,4 @@
-# Social Media Scrapper For Financial Data
+# Full stack template using FAVM (FastAPI, Vue, Mongo) Stack
 
 ## Current Container Setup
 
