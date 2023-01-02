@@ -4,7 +4,7 @@
 
 | Container Name | Image                | Purpose            |
 |----------------|----------------------|--------------------|
-| postgres       | mongo:6.0.3          | database           |
+| mongo          | mongo:6.0.3          | database           |
 | backend        | python:3.11.0-alpine | backend (FastAPI)  |              |
 | frontend       | node:18.2-alpine3.15 | vue.js application |
 
