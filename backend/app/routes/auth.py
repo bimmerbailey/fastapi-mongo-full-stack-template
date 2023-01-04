@@ -1,9 +1,7 @@
 from fastapi import APIRouter, Depends, status, HTTPException, Request
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
-
-from pymongo.client_session import ClientSession
-
+from motor.core import AgnosticDatabase
 from starlette.responses import RedirectResponse
 
 from app.models.users import User
@@ -18,7 +16,7 @@ router = APIRouter(tags=['Authentication'], prefix='/api/v1')
 
 
 @router.post('/login', response_model=Token)
-async def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: ClientSession = Depends(get_db)):
+async def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: AgnosticDatabase = Depends(get_db)):
     auth_user = await user.get_by_email(db, user_credentials.username)
     if not auth_user:
         raise HTTPException(
@@ -46,14 +44,14 @@ async def route_logout_and_remove_cookie():
 
 
 @router.get("/authenticated", response_model=UserBase)
-def read_user_me(db: ClientSession = Depends(get_db),
+def read_user_me(db: AgnosticDatabase = Depends(get_db),
                  current_user: User = Depends(oauth.get_current_user),
                  ):
     return current_user
 
 
 @router.get("/forgot/password", response_model=UserBase)
-def forgot_password(req: Request, db: ClientSession = Depends(get_db)):
+def forgot_password(req: Request, db: AgnosticDatabase = Depends(get_db)):
     body = req.query_params
     email = body.get("email", None)
     if not email:

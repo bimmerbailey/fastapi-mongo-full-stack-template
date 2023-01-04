@@ -1,26 +1,28 @@
 from motor.motor_asyncio import AsyncIOMotorClient
+from motor.core import AgnosticDatabase, AgnosticCollection
 
 from app.config.config import settings
 from app.config.logging import logger
-
-MONGODB_URL = f"mongodb://{settings.database_username}:{settings.database_password}@{settings.database_hostname}" \
-              f"/{settings.database_name}?retryWrites=true&w=majority"
 
 
 class DataBase:
     client: AsyncIOMotorClient = None
 
-    def get_db(self):
+    def get_db(self) -> AgnosticDatabase | None:
         if self.client is not None:
             return self.client[settings.database_name]
         else:
             return None
 
+    def get_collection(self, collection_name: str) -> AgnosticCollection | None:
+        db = self.get_db()
+        if db:
+            return db[collection_name]
+        else:
+            return None
 
-database = None
+
 db_client = DataBase()
-if db_client.get_db() is not None:
-    database = db_client.get_db()
 
 
 async def get_database() -> AsyncIOMotorClient:
@@ -29,7 +31,7 @@ async def get_database() -> AsyncIOMotorClient:
 
 async def connect_to_mongo():
     logger.info("Connecting to MongoDB...")
-    db_client.client = AsyncIOMotorClient(MONGODB_URL,
+    db_client.client = AsyncIOMotorClient(settings.database_url,
                                           maxPoolSize=10,
                                           minPoolSize=10)
     logger.info("Connected to MongoDB!")
@@ -44,7 +46,6 @@ async def close_mongo_connection():
 async def get_db():
     async with await db_client.client.start_session() as session:
         try:
-            async with session.start_transaction():
-                yield db_client.get_db()
+            yield session
         finally:
             session.end_session()

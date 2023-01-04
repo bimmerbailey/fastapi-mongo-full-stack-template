@@ -12,9 +12,6 @@ class UserOut(UserBase):
     _id: str
     created_date: datetime
 
-    class Config:
-        orm_mode = True
-
 
 class UserCreate(UserBase):
     password: str

@@ -16,6 +16,9 @@ if env != "dev":
 
 origins = ["*"]
 
+app.add_event_handler("startup", connect_to_mongo)
+app.add_event_handler("shutdown", close_mongo_connection)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -25,6 +28,3 @@ app.add_middleware(
 )
 app.include_router(auth.router)
 app.include_router(users.router)
-
-app.add_event_handler("startup", connect_to_mongo)
-app.add_event_handler("shutdown", close_mongo_connection)

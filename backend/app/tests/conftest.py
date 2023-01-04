@@ -1,13 +1,11 @@
-from fastapi.testclient import TestClient
+import asyncio
 from httpx import AsyncClient
 import pytest
-import asyncio
-from pymongo.mongo_client import MongoClient
 
 from app.main import app
-from app.config.config import settings
-from app.database.init_db import get_database, connect_to_mongo
+from app.database.init_db import db_client, connect_to_mongo
 from app import oauth
+from app.models.users import User
 
 
 @pytest.fixture(scope="class")
@@ -24,10 +22,10 @@ def anyio_backend():
 
 
 @pytest.fixture(scope="session")
-async def client():
+async def client() -> AsyncClient:
     await connect_to_mongo()
-    db = await get_database()
-    await db[settings.database_name].drop_collection("users")
+    db = db_client.get_db()
+    await db.drop_collection("users")
 
     async with AsyncClient(app=app, base_url="http://localhost:3000") as client:
         yield client
@@ -35,10 +33,9 @@ async def client():
 
 @pytest.fixture
 @pytest.mark.anyio
-async def regular_user(client):
-    await connect_to_mongo()
-    db = await get_database()
-    await db[settings.database_name].drop_collection("users")
+async def regular_user(client: AsyncClient):
+    db = db_client.get_db()
+    await db.drop_collection("users")
 
     user_data = {"email": "user@gmail.com",
                  "password": "password123"}
@@ -48,15 +45,14 @@ async def regular_user(client):
 
     new_user = res.json()
     new_user['password'] = user_data['password']
-    return new_user
+    return User(**new_user)
 
 
 @pytest.fixture
 @pytest.mark.anyio
-async def admin_user(client):
-    await connect_to_mongo()
-    db = await get_database()
-    await db[settings.database_name].drop_collection("users")
+async def admin_user(client: AsyncClient):
+    db = db_client.get_db()
+    await db.drop_collection("users")
 
     user_data = {"email": "admin@gmail.com",
                  "password": "password123",
@@ -66,7 +62,7 @@ async def admin_user(client):
 
     new_user = res.json()
     new_user['password'] = user_data['password']
-    return new_user
+    return User(**new_user)
 
 
 @pytest.fixture
@@ -75,7 +71,7 @@ def token(test_user):
 
 
 @pytest.fixture
-def authorized_client(client, token):
+def authorized_client(client: AsyncClient, token: str):
     client.headers = {
         **client.headers,
         "Authorization": f"Bearer {token}"

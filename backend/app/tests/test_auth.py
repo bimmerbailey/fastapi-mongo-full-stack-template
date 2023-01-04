@@ -4,6 +4,7 @@ from httpx import AsyncClient
 
 from app import schemas
 from app.config.config import settings
+from app.models.users import User
 
 users_url = "/api/v1/users"
 auth_url = "/api/v1/login"
@@ -19,31 +20,34 @@ async def test_create_user(client: AsyncClient):
 
 
 @pytest.mark.anyio
-async def test_login_user(client: AsyncClient, regular_user: dict):
+async def test_login_user(client: AsyncClient, regular_user: User):
     res = await client.post(
-        auth_url, data={"username": regular_user['email'], "password": regular_user['password']})
+        auth_url, data={"username": regular_user.email, "password": regular_user.password})
     login_res = schemas.users.Token(**res.json())
     payload = jwt.decode(login_res.access_token,
                          settings.secret_key, algorithms=[settings.algorithm])
-    id = payload.get("user_id")
 
+    user_id = payload.get("user_id")
+    token_data = schemas.users.TokenData(id=user_id)
+
+    # assert regular_user.id == token_data.id
     assert login_res.token_type == "bearer"
     assert res.status_code == 200
 
 
 @pytest.mark.anyio
-async def test_admin(client: AsyncClient, admin_user: dict):
+async def test_admin(client: AsyncClient, admin_user: User):
     res = await client.post(
-        auth_url, data={"username": admin_user['email'], "password": admin_user['password']})
+        auth_url, data={"username": admin_user.email, "password": admin_user.password})
     login_res = schemas.users.Token(**res.json())
     assert res.status_code == 200
     assert login_res.is_admin
 
 
 @pytest.mark.anyio
-async def test_regular_user(client: AsyncClient, regular_user: dict):
+async def test_regular_user(client: AsyncClient, regular_user: User):
     res = await client.post(
-        auth_url, data={"username": regular_user['email'], "password": regular_user['password']})
+        auth_url, data={"username": regular_user.email, "password": regular_user.password})
     login_res = schemas.users.Token(**res.json())
     assert res.status_code == 200
     assert not login_res.is_admin

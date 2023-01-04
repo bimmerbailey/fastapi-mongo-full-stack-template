@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     database_hostname = os.environ.get("DATABASE_HOST", "mongo")
     database_port = os.environ.get("DATABASE_PORT", "27017")
     database_password = os.environ.get("DATABASE_PASSWORD", "password")
-    database_name = os.environ.get("DATABASE_NAME", "test_your_app")
+    database_name = os.environ.get("DATABASE_NAME", "your_app")
     database_username = os.environ.get("DATABASE_USERNAME", "app_user")
     secret_key = os.environ.get("JWT_SECRET_KEY", "secret")
     algorithm = os.environ.get("JWT_ALGORITHM", "HS256")
