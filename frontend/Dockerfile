@@ -2,6 +2,8 @@ FROM node:18.2-alpine3.15 as build
 
 WORKDIR /frontend
 
+RUN npm install -g npm
+
 COPY package*.json .
 
 EXPOSE 3000
