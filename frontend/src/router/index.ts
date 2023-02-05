@@ -1,74 +1,83 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { getLocalToken } from '@/utils'
+import { businessInfo } from '@/business'
 import { useAuthStore } from '@/stores/auth'
-import { computed } from 'vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/',
-      name: 'home',
-      component: () => import('../views/HomeView.vue'),
-    },
-    {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: () => import('../views/LoginView.vue'),
-    },
-    // {
-    //   path: '/forgot-password',
-    //   name: 'forgot-password',
-    //   component: () => import('../components/ForgotPassword.vue'),
-    // },
-    // {
-    //   path: '/signup',
-    //   name: 'signup',
-    //   component: () => import('../components/SignUp.vue'),
-    // },
-    {
-      path: '/users',
-      name: 'users',
-      component: () => import('../views/UsersView.vue'),
       meta: {
+        title: 'Dashboard',
         requiresAuth: true,
       },
+      path: '/',
+      name: 'home',
+      component: () => import('@/views/HomeView.vue'),
+    },
+    {
+      meta: {
+        title: 'Profile',
+        requiresAuth: true,
+      },
+      path: '/profile',
+      name: 'profile',
+      component: () => import('@/views/ProfileView.vue'),
+    },
+    {
+      meta: {
+        title: 'Users',
+        requiresAuth: true,
+      },
+      path: '/users',
+      name: 'users',
+      component: () => import('@/views/UsersView.vue'),
+    },
+    {
+      meta: {
+        title: 'Login',
+      },
+      path: '/login',
+      name: 'login',
+      component: () => import('@/views/LoginView.vue'),
+    },
+    {
+      meta: {
+        title: 'Error',
+      },
+      path: '/error',
+      name: 'error',
+      component: () => import('@/views/ErrorView.vue'),
     },
   ],
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || { top: 0 }
+  },
 })
 
 router.beforeEach(async (to, from, next) => {
   const store = useAuthStore()
   await store.checkLoggedIn()
-  const loggedIn = computed(() => store.authState.LoggedIn)
-  const isAuth = Boolean(getLocalToken())
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (!isAuth) {
+    if (!store.authToken) {
       return next({
         name: 'login',
         state: { nextURL: to.fullPath },
       })
     } else {
-      if (!loggedIn.value) {
-        return next({
-          name: 'login',
-          state: { nextURL: to.fullPath },
-        })
-      } else {
-        return next()
-      }
+      return next()
     }
   } else {
     return next()
   }
 })
+
+const defaultDocumentTitle = businessInfo.name
+/* Set document title from route meta */
+router.afterEach((to) => {
+  document.title = to.meta?.title
+    ? `${to.meta.title} — ${defaultDocumentTitle}`
+    : defaultDocumentTitle
+})
+
 export default router

@@ -10,6 +10,7 @@ from app.config.config import settings
 
 
 async def create_users(db: Depends(get_db)):
+    await db["users"].drop()
     await db["users"].insert_one({
         "email": "admin@your-app.com",
         "password": hash_password("password"),

@@ -1,21 +1,36 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import BootstrapVue3 from 'bootstrap-vue-3'
-import VueApexCharts from 'vue3-apexcharts'
 
 import App from './App.vue'
 import router from './router'
+import { useMainStore } from '@/stores/main'
+import { useStyleStore } from '@/stores/style'
+import { darkModeKey, styleKey } from '@/styles/config'
 
-import 'bootstrap-vue-3/dist/bootstrap-vue-3.css'
-// import 'bootstrap/dist/css/bootstrap.css'
-import '@/assets/scss/_bootswatch.scss'
-import 'bootstrap-icons/font/bootstrap-icons.css'
+import './css/main.css'
 
-const app = createApp(App)
+/* Init Pinia */
+const pinia = createPinia()
 
-app.use(createPinia())
-app.use(router)
-app.use(BootstrapVue3)
-app.use(VueApexCharts)
+/* Create Vue app */
+createApp(App).use(router).use(pinia).mount('#app')
 
-app.mount('#app')
+/* Init Pinia stoes */
+const mainStore = useMainStore(pinia)
+const styleStore = useStyleStore(pinia)
+
+/* Fetch sample data */
+mainStore.fetch('clients')
+mainStore.fetch('history')
+
+// /* App style */
+// styleStore.setStyle(localStorage[styleKey] ?? 'basic')
+
+/* Dark mode */
+if (
+  (!localStorage[darkModeKey] &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches) ||
+  localStorage[darkModeKey] === '1'
+) {
+  styleStore.setDarkMode(true)
+}
