@@ -65,7 +65,7 @@
   </LayoutAuthenticated>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { computed } from 'vue'
 import { useMainStore } from '@/stores/main'
 import {
@@ -84,10 +84,24 @@ const mainStore = useMainStore()
 
 // interface ClientI {
 //   id: string
+//   account: string
 //   name: string
 //   login: string
+//   business: string
 //   created: string
 //   progress: number
+// }
+//
+// interface TransactionI {
+//   id: string
+//   avatar: string
+//   login: string
+//   name: string
+//   company: string
+//   city: string
+//   progress: number
+//   created: string
+//   created_mm_dd_yyyy: string
 // }
 
 const clientBarItems = computed(() => mainStore.clients.slice(0, 4))

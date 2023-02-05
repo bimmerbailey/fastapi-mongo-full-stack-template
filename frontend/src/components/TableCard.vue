@@ -1,19 +1,13 @@
-<script lang="ts" setup>
-import type { PropType } from 'vue'
+<script setup>
 import CardBox from '@/components/CardBox.vue'
-
-interface ItemsI {
-  [index: string]: string
-  id: string
-}
 
 defineProps({
   items: {
-    type: Array as PropType<Array<ItemsI>>,
+    type: Array,
     default: null,
   },
   headers: {
-    type: Array as PropType<Array<string>>,
+    type: Array,
     default: null,
   },
 })

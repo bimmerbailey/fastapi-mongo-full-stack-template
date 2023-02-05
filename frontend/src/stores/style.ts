@@ -1,6 +1,6 @@
-import {defineStore} from 'pinia'
-import {basic} from '@/styles/styles'
-import {darkModeKey, styleKey} from '@/styles/config'
+import { defineStore } from 'pinia'
+import { basic } from '@/styles/styles'
+import { darkModeKey, styleKey } from '@/styles/config'
 
 interface StyleConfig {
   [index: string]: boolean | string
