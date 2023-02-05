@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia'
-import { AuthApi } from '@/api'
+import { AuthApi } from '@/api/auth'
 import { saveLocalToken, removeLocalToken, getLocalToken } from '@/utils'
-import type { LoginResults } from '@/interfaces/Auth'
-import type { UserProfile, AuthState } from '@/interfaces/Auth'
+import type { UserProfile, AuthState, LoginResults } from '@/interfaces/Auth'
 import { computed, ref } from 'vue'
 import router from '@/router'
 
@@ -17,17 +16,13 @@ export const useAuthStore = defineStore('Auth', () => {
 
   const user = computed(() => authState.value.User)
   const isAdmin = computed(() => authState.value.IsAdmin)
+  const isLoggedIn = computed(() => authState.value.LoggedIn)
+  const authToken = computed(() => authState.value.AccessToken)
 
   async function createUser(username: string, password: string) {
     await AuthApi.signUp(username, password)
       .then((resp) => {
-        if (resp.ok) {
-          return resp.json()
-        } else {
-          return resp.text().then((text) => {
-            throw JSON.parse(text)
-          })
-        }
+        return resp
       })
       .then(async () => {
         await login(username, password)
@@ -41,15 +36,6 @@ export const useAuthStore = defineStore('Auth', () => {
 
   async function login(username: string, password: string) {
     await AuthApi.login(username, password)
-      .then((resp) => {
-        if (resp.ok) {
-          return resp.json()
-        } else {
-          return resp.text().then((text) => {
-            throw JSON.parse(text)
-          })
-        }
-      })
       .then(async (resp: LoginResults) => {
         authState.value.AccessToken = resp.access_token
         authState.value.AuthError = false
@@ -68,16 +54,7 @@ export const useAuthStore = defineStore('Auth', () => {
     if (token == null) {
       throw new Error('Authentication Error')
     }
-    await AuthApi.checkAuthentication(token)
-      .then((resp) => {
-        if (resp.ok) {
-          return resp.json()
-        } else {
-          return resp.text().then((text) => {
-            throw JSON.parse(text)
-          })
-        }
-      })
+    await AuthApi.checkAuthentication()
       .then((resp: UserProfile) => {
         authState.value.LoggedIn = true
         authState.value.User = resp
@@ -110,25 +87,39 @@ export const useAuthStore = defineStore('Auth', () => {
       if (token) {
         await checkAuth(token)
       } else {
-        authState.value.AccessToken = null
+        removeLocalToken()
         authState.value.LoggedIn = false
-        authState.value.AuthError = true
+        authState.value.User = null
+        authState.value.IsAdmin = false
+        authState.value.AccessToken = null
       }
-    } else {
-      const token = authState.value.AccessToken
-      await checkAuth(token)
     }
   }
 
   async function logOut() {
-    await AuthApi.logOut()
-    removeLocalToken()
-    authState.value.LoggedIn = false
-    authState.value.User = null
-    authState.value.IsAdmin = false
-    authState.value.AccessToken = ''
-    await router.push('/login')
+    AuthApi.logOut()
+      .catch((err) => {
+        return err
+      })
+      .finally(() => {
+        removeLocalToken()
+        authState.value.LoggedIn = false
+        authState.value.User = null
+        authState.value.IsAdmin = false
+        authState.value.AccessToken = null
+        return router.push('/login')
+      })
   }
 
-  return { authState, user, isAdmin, login, checkLoggedIn, logOut, createUser }
+  return {
+    authState,
+    user,
+    isAdmin,
+    login,
+    checkLoggedIn,
+    logOut,
+    createUser,
+    isLoggedIn,
+    authToken,
+  }
 })

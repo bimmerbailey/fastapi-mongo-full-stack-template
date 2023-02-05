@@ -1,28 +1,29 @@
 <template>
-  <div>
-    <b-row>
-      <b-col>
-        <b-button @click="submitButton" class="float-start"
-          >View Users</b-button
-        >
-      </b-col>
-    </b-row>
-    <b-row>
-      <b-col>
-        <b-list-group>
-          <b-list-group-item v-for="user in users" :key="user.id">
-            {{ user }}
-          </b-list-group-item>
-        </b-list-group>
-      </b-col>
-    </b-row>
-  </div>
+  <layout-authenticated>
+    <section-main>
+      <section-title-line-with-button
+        :icon="mdiTableBorder"
+        title="Users"
+        main
+      ></section-title-line-with-button>
+      <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
+        <table-card :items="users" :headers="userHeaders" />
+      </div>
+    </section-main>
+  </layout-authenticated>
 </template>
 
-<script setup lang="ts">
-import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { AuthApi } from '@/api'
+<script lang="ts" setup>
+import { onMounted, ref } from 'vue'
+import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
+import SectionMain from '@/components/SectionMain.vue'
+
+import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
+
+import { mdiTableBorder } from '@mdi/js'
+
+import { usersApi } from '@/api/users'
+import TableCard from '@/components/TableCard.vue'
 
 interface Profile {
   id: string
@@ -32,24 +33,23 @@ interface Profile {
 }
 
 const users = ref([] as Profile[])
-const store = useAuthStore()
 const errors = ref(null)
 
-function submitButton() {
-  AuthApi.getUsers(store.authState.AccessToken)
-    .then((res) => {
-      if (res.ok) {
-        return res.json()
-      }
-    })
+const userHeaders = ref(['created_date', 'email', 'is_admin'])
+
+function getUsers() {
+  return usersApi
+    .getUsers()
     .then((res: Profile[]) => {
-      users.value = res
+      return (users.value = res)
     })
     .catch((err) => {
-      errors.value = err
-      console.log(err)
+      return (errors.value = err)
     })
 }
+onMounted(() => {
+  getUsers()
+})
 </script>
 
 <style scoped></style>

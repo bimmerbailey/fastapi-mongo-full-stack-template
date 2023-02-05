@@ -38,7 +38,7 @@ async def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Agn
 
 @router.get("/logout")
 async def route_logout_and_remove_cookie():
-    response = RedirectResponse(url="/")
+    response = RedirectResponse(url="", status_code=status.HTTP_302_FOUND)
     response.delete_cookie(key="token", domain=settings.url_base)
     return response
 
