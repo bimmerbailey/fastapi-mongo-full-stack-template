@@ -1,17 +1,5 @@
-interface StyleConfig {
-  [index: string]: string
-  /* Styles */
-  aside: string
-  asideScrollbars: string
-  asideBrand: string
-  asideMenuItem: string
-  asideMenuItemActive: string
-  asideMenuDropdown: string
-  navBarItemLabel: string
-  navBarItemLabelHover: string
-  navBarItemLabelActiveColor: string
-  overlay: string
-}
+import type { StyleConfig } from '@/interfaces/Styles'
+import type { StylesI } from '@/interfaces/Styles'
 
 export const basic: StyleConfig = {
   aside: 'bg-gray-800',
@@ -37,4 +25,9 @@ export const white: StyleConfig = {
   navBarItemLabelHover: 'hover:text-black',
   navBarItemLabelActiveColor: 'text-black',
   overlay: 'from-white via-gray-100 to-white',
+}
+
+export const Styles: StylesI = {
+  basic: basic,
+  white: white,
 }

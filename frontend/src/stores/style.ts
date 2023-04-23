@@ -1,28 +1,10 @@
 import { defineStore } from 'pinia'
-import { basic } from '@/styles/styles'
+import { Styles } from '@/styles/styles'
 import { darkModeKey, styleKey } from '@/styles/config'
-
-interface StyleConfig {
-  [index: string]: boolean | string
-
-  /* Styles */
-  asideStyle: string
-  asideScrollbarsStyle: string
-  asideBrandStyle: string
-  asideMenuItemStyle: string
-  asideMenuItemActiveStyle: string
-  asideMenuDropdownStyle: string
-  navBarItemLabelStyle: string
-  navBarItemLabelHoverStyle: string
-  navBarItemLabelActiveColorStyle: string
-  overlayStyle: string
-
-  /* Dark mode */
-  darkMode: boolean
-}
+import type { StyleStore } from '@/interfaces/Styles'
 
 export const useStyleStore = defineStore('style', {
-  state: (): StyleConfig => ({
+  state: (): StyleStore => ({
     /* Styles */
     asideStyle: '',
     asideScrollbarsStyle: '',
@@ -40,7 +22,7 @@ export const useStyleStore = defineStore('style', {
   }),
   actions: {
     setStyle(payload: string) {
-      if (!basic) {
+      if (!Styles[payload]) {
         return
       }
 
@@ -48,9 +30,11 @@ export const useStyleStore = defineStore('style', {
         localStorage.setItem(styleKey, payload)
       }
 
-      for (const key of Object.keys(basic)) {
+      const style = Styles[payload]
+
+      for (const key of Object.keys(style)) {
         const keyValue: string = `${key}Style`
-        this[keyValue] = basic[key]
+        this[keyValue] = style[key]
       }
     },
 

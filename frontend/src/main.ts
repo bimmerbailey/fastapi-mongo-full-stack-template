@@ -24,7 +24,7 @@ mainStore.fetch('clients')
 mainStore.fetch('history')
 
 // /* App style */
-// styleStore.setStyle(localStorage[styleKey] ?? 'basic')
+styleStore.setStyle(localStorage[styleKey] ?? 'basic')
 
 /* Dark mode */
 if (

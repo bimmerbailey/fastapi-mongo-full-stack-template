@@ -20,3 +20,4 @@ httpx==0.23.1
 pymongo==4.3.3
 motor==3.1.1
 pytest-asyncio==0.20.3
+beanie==1.17.0

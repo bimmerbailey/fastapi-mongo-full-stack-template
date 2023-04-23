@@ -4,7 +4,7 @@ from httpx import AsyncClient
 
 from app import schemas
 from app.config.config import settings
-from app.models.users import User
+from app.models.users import Users
 
 users_url = "/api/v1/users"
 auth_url = "/api/v1/login"
@@ -20,7 +20,7 @@ async def test_create_user(client: AsyncClient):
 
 
 @pytest.mark.anyio
-async def test_login_user(client: AsyncClient, regular_user: User):
+async def test_login_user(client: AsyncClient, regular_user: Users):
     res = await client.post(
         auth_url, data={"username": regular_user.email, "password": regular_user.password})
     login_res = schemas.users.Token(**res.json())
@@ -36,7 +36,7 @@ async def test_login_user(client: AsyncClient, regular_user: User):
 
 
 @pytest.mark.anyio
-async def test_admin(client: AsyncClient, admin_user: User):
+async def test_admin(client: AsyncClient, admin_user: Users):
     res = await client.post(
         auth_url, data={"username": admin_user.email, "password": admin_user.password})
     login_res = schemas.users.Token(**res.json())
@@ -45,7 +45,7 @@ async def test_admin(client: AsyncClient, admin_user: User):
 
 
 @pytest.mark.anyio
-async def test_regular_user(client: AsyncClient, regular_user: User):
+async def test_regular_user(client: AsyncClient, regular_user: Users):
     res = await client.post(
         auth_url, data={"username": regular_user.email, "password": regular_user.password})
     login_res = schemas.users.Token(**res.json())

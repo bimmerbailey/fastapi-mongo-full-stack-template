@@ -1,31 +1,18 @@
 from datetime import datetime, timezone
-from typing import Optional
 
-from pydantic import BaseModel, Field, EmailStr
-from bson import ObjectId
-
-from .base import PyObjectId
+import pymongo
+from beanie import Document
+from pydantic import EmailStr
 
 
-class User(BaseModel):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+class Users(Document):
     created_date: datetime = datetime.now(tz=timezone.utc)
-    email: EmailStr = Field(...)
-    password: str = Field(...)
+    first_name: str | None = None
+    last_name: str | None = None
+    email: EmailStr
+    password: str
     is_admin: bool = False
 
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {
-            ObjectId: str,
-            datetime: lambda v: v.isoformat()
-        }
-        schema_extra = {
-            "example": {
-                "email": "jdoe@example.com",
-                "created_date": datetime.now().isoformat(),
-                "password": "ExAmplEpaSswOrd12",
-                "is_admin": "False",
-            }
-        }
+    class Settings:
+        name = "users"
+        indexes = [[("email", pymongo.TEXT)]]

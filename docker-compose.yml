@@ -11,7 +11,9 @@ services:
       - "3000:3000"
   
   backend:
-    build: ./backend
+    build: 
+      context: ./backend
+      target: development
     depends_on:
       - "mongo"
     ports:
@@ -20,7 +22,7 @@ services:
     - "./backend:/backend"
 
   mongo:
-    image: mongo:6.0.3
+    image: mongo:6.0.5
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongod
       MONGO_INITDB_ROOT_PASSWORD: Password123!
@@ -28,8 +30,8 @@ services:
     volumes:
       - "mongo:/data/db"
       - "./dev/init-db.js:/docker-entrypoint-initdb.d/init-db.js"
-    ports:
-      - "27017:27017"
+    expose:
+      - "27017"
     restart: unless-stopped
 
 volumes:

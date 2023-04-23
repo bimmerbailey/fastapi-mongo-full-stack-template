@@ -1,15 +1,19 @@
-from pydantic import BaseModel, EmailStr
 from datetime import datetime
 from typing import Optional
+
+from beanie import PydanticObjectId
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserBase(BaseModel):
     email: Optional[str] = None
     is_admin: bool = False
+    first_name: str | None = None
+    last_name: str | None = None
 
 
 class UserOut(UserBase):
-    _id: str
+    _id: PydanticObjectId = Field(None, alias="id")
     created_date: datetime
 
 

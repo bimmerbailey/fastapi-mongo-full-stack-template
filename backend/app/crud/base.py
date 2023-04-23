@@ -1,86 +1,74 @@
-from typing import Any, Generic, Optional, Type, TypeVar, Union
+from typing import Generic, Type, TypeVar
 
-from bson.objectid import ObjectId
-from fastapi.encoders import jsonable_encoder
-from motor.core import AgnosticClientSession, AgnosticCollection, AgnosticClientSession
+from beanie import Document, PydanticObjectId
+from motor.core import ClientSession
 from pydantic import BaseModel
 
-from app.config.config import settings
-
-ModelType = TypeVar("ModelType", bound=BaseModel)
-CollectionType = TypeVar("CollectionType", bound=AgnosticCollection)
+ModelType = TypeVar("ModelType", bound=Document)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseModel)
 
 
 class CrudBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
-    def __init__(self, model: Type[ModelType], collection: str):
+    def __init__(self, model: Type[ModelType]):
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
         **Parameters**
-        * `model`: A Pydantic BaseModel class
-        * `collection`: A PyMongo ClientSession model class
+        * `model`: A Beanie Document class
         """
         self.model = model
-        self.collection = collection
 
-    async def get_all(self, session: AgnosticClientSession, skip: int = 0, limit: int = 20) -> Optional[dict]:
-        db: AgnosticCollection = session.client[settings.database_name][self.collection]
-        items = await db.find(skip=skip, limit=limit, session=session).to_list(length=limit)
-        if not items:
-            return None
+    async def get_all(
+        self,
+        session: ClientSession | None = None,
+        skip: int = 0,
+        limit: int = 20,
+    ) -> dict[str, ModelType | int]:
+        items = await self.model.find_all(
+            session=session, skip=skip, limit=limit
+        ).to_list()
 
-        return {
-            "items": [self.model(i) for i in items],
-            "total": len(items)
-        }
+        return {"items": items, "total": len(items)}
 
-    async def get_one(self, session: AgnosticClientSession, model_id: Any) -> Optional[ModelType]:
-        db: AgnosticCollection = session.client[settings.database_name][self.collection]
-        item = await db.find_one({"_id": ObjectId(model_id)}, session=session)
-        if not item:
-            return None
-        return self.model(**item)
+    async def get_one(
+        self, model_id: PydanticObjectId, session: ClientSession | None = None
+    ) -> ModelType | None:
+        return await self.model.get(model_id, session=session)
 
-    async def create(self, session: AgnosticClientSession, obj_in: CreateSchemaType) -> ModelType:
-        obj_in_data = jsonable_encoder(obj_in)
-        db_obj = self.model(**obj_in_data)
-        db: AgnosticCollection = session.client[settings.database_name][self.collection]
-        await db.insert_one({**db_obj}, session=session)
+    async def create(
+        self, obj_in: CreateSchemaType, session: ClientSession | None = None
+    ) -> ModelType:
+        db_obj = self.model(**obj_in)
+        await self.model.insert(session=session)
         return db_obj
 
-    async def update(self, session: AgnosticClientSession, search: dict, new_key_value: dict) -> Optional[ModelType]:
-        db: AgnosticCollection = session.client[settings.database_name][self.collection]
-        item = await db.find_one_and_update(search, new_key_value, session=session)
-        if not item:
-            return None
-        return self.model(**item)
+    async def update(
+        self,
+        update_obj: UpdateSchemaType,
+        model_id: PydanticObjectId,
+        session: ClientSession | None = None,
+    ) -> ModelType | None:
+        item = await self.model.get(model_id, session=session)
+        for key in update_obj.dict():
+            if update_obj[key]:
+                item[key] = update_obj[key]
+        # NOTE: Will only update NOT create, if using save() it will create if obj doesn't exist
+        await item.replace()
+        return item
 
-    async def remove(self, session: AgnosticClientSession, model_id: Any) -> Optional[ModelType]:
-        db: AgnosticCollection = session.client[settings.database_name][self.collection]
-        item = await db.find_one_and_delete({"_id": ObjectId(model_id)}, session=session)
-        if not item:
-            return None
-        return self.model(**item)
+    async def remove(
+        self, model_id: PydanticObjectId, session: ClientSession | None = None
+    ) -> ModelType | None:
+        item = await self.model.get(model_id, session=session)
+        await item.delete(session=session)
+        return item
 
-    async def filter(self, session: AgnosticClientSession, column: ModelType, value: str, skip: int = 0,
-                     limit: int = 20) -> Optional[dict]:
-        db: AgnosticCollection = session.client[settings.database_name][self.collection]
-        items = await db.find({f"{column}": value}, skip=skip, limit=limit, session=session).to_list(
-            length=limit)
-        if not items:
-            return None
-        return {
-            "items": [self.model(**i) for i in items],
-            "total": len(items)
-        }
-
-    async def aggregate(self, session: AgnosticClientSession, query: dict) -> Optional[dict]:
-        db: AgnosticCollection = session.client[settings.database_name][self.collection]
-        items = await db.aggregate(pipeline=query, session=session).to_list()
-        if not items:
-            return None
-        return {
-            "items": [self.model(**i) for i in items],
-            "total": len(items)
-        }
+    # async def aggregate(self, session: ClientSession | None, query: dict) -> dict
+    #     db: AgnosticCollection = session.client[settings.database_name][self.collection]
+    #     items = await db.aggregate(pipeline=query, session=session).to_list()
+    #     if not items:
+    #         return None
+    #     return {
+    #         "items": [self.model(**i) for i in items],
+    #         "total": len(items)
+    #     }

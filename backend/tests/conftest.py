@@ -5,7 +5,7 @@ import pytest
 from app.main import app
 from app.database.init_db import db_client, connect_to_mongo
 from app import oauth
-from app.models.users import User
+from app.models.users import Users
 
 
 @pytest.fixture(scope="class")
@@ -45,7 +45,7 @@ async def regular_user(client: AsyncClient):
 
     new_user = res.json()
     new_user['password'] = user_data['password']
-    return User(**new_user)
+    return Users(**new_user)
 
 
 @pytest.fixture
@@ -62,7 +62,7 @@ async def admin_user(client: AsyncClient):
 
     new_user = res.json()
     new_user['password'] = user_data['password']
-    return User(**new_user)
+    return Users(**new_user)
 
 
 @pytest.fixture

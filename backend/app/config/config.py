@@ -12,10 +12,13 @@ class Settings(BaseSettings):
     algorithm = os.environ.get("JWT_ALGORITHM", "HS256")
     access_token_expire_minutes = os.environ.get("JWT_TOKEN_EXPIRES", 60)
     url_base = os.environ.get("URL_BASE", "localhost")
+    log_level = os.environ.get("LOG_LEVEL", "DEBUG")
 
-    database_url = os.environ.get("DATABASE_URL",
-                                  f"mongodb://{database_username}:{database_password}@{database_hostname}/"
-                                  f"{database_name}?retryWrites=true&w=majority")
+    database_url = os.environ.get(
+        "DATABASE_URL",
+        f"mongodb://{database_username}:{database_password}@{database_hostname}/"
+        f"{database_name}?retryWrites=true&w=majority",
+    )
 
 
 settings = Settings()

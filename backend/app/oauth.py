@@ -7,10 +7,9 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
 from app import schemas, models, crud
-from app.database.init_db import get_db
 from app.config.config import settings
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='api/v1/login')
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/login")
 
 SECRET_KEY = settings.secret_key
 ALGORITHM = settings.algorithm
@@ -41,29 +40,32 @@ def verify_access_token(token: str, credentials_exception):
     return token_data
 
 
-async def get_current_user(header_token: Optional[str] = Depends(oauth2_scheme),
-                           db=Depends(get_db),
-                           token: Optional[str] = Cookie(default=None)):
-    credentials_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                                          detail=f"Could not validate credentials",
-                                          headers={"WWW-Authenticate": "Bearer"})
+async def get_current_user(
+    header_token: Optional[str] = Depends(oauth2_scheme),
+    token: Optional[str] = Cookie(default=None),
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail=f"Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     token = verify_access_token(header_token, credentials_exception)
-    auth_user = await crud.users.user.get_one(db, token.id)
+    auth_user = await crud.users.user.get_one(token.id)
 
     return auth_user
 
 
 def get_current_active_user(
-        current_user: models.users.User = Depends(get_current_user),
-) -> models.users.User:
+    current_user: models.users.Users = Depends(get_current_user),
+) -> models.users.Users:
     if not crud.users.user.is_active(current_user):
         raise HTTPException(status_code=400, detail="Inactive user")
     return current_user
 
 
 def get_current_active_superuser(
-        current_user: models.users.User = Depends(get_current_user),
-) -> models.users.User:
+    current_user: models.users.Users = Depends(get_current_user),
+) -> models.users.Users:
     if not crud.users.user.is_admin(current_user):
         raise HTTPException(
             status_code=400, detail="The user doesn't have enough privileges"
