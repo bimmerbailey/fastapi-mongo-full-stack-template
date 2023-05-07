@@ -3,10 +3,14 @@ from datetime import datetime, timezone
 
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
+import structlog
 
-from app.utils import hash_password
-from app.config.config import settings
-from app.models.users import Users
+from utils import hash_password
+from config.config import settings
+from models.users import Users
+
+
+logger: structlog.stdlib.BoundLogger = structlog.getLogger(__name__)
 
 
 async def connect_db():
@@ -19,6 +23,7 @@ async def connect_db():
 
 
 async def create_users():
+    logger.info("Dropping local Users collection")
     await Users.delete_all()
 
     users = [
@@ -42,6 +47,7 @@ async def create_users():
     ]
 
     await Users.insert_many(users)
+    logger.info("Users added")
 
 
 async def create_dev_data():

@@ -36,38 +36,11 @@
           label="Performance"
         />
       </div>
-
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div class="flex flex-col justify-between">
-          <CardBoxTransaction
-            v-for="(transaction, index) in transactionBarItems"
-            :key="index"
-            :amount="transaction.amount"
-            :date="transaction.date"
-            :business="transaction.business"
-            :type="transaction.type"
-            :name="transaction.name"
-            :account="transaction.account"
-          />
-        </div>
-        <div class="flex flex-col justify-between">
-          <CardBoxClient
-            v-for="client in clientBarItems"
-            :key="client.id"
-            :name="client.name"
-            :login="client.login"
-            :date="client.created"
-            :progress="client.progress"
-          />
-        </div>
-      </div>
     </SectionMain>
   </LayoutAuthenticated>
 </template>
 
-<script setup>
-import { computed } from 'vue'
-import { useMainStore } from '@/stores/main'
+<script setup lang="ts">
 import {
   mdiAccountMultiple,
   mdiCartOutline,
@@ -75,36 +48,6 @@ import {
 } from '@mdi/js'
 import SectionMain from '@/components/SectionMain.vue'
 import CardBoxWidget from '@/components/CardBoxWidget.vue'
-import CardBoxTransaction from '@/components/CardBoxTransaction.vue'
-import CardBoxClient from '@/components/CardBoxClient.vue'
 import LayoutAuthenticated from '@/layouts/LayoutAuthenticated.vue'
 import SectionTitleLineWithButton from '@/components/SectionTitleLineWithButton.vue'
-
-const mainStore = useMainStore()
-
-// interface ClientI {
-//   id: string
-//   account: string
-//   name: string
-//   login: string
-//   business: string
-//   created: string
-//   progress: number
-// }
-//
-// interface TransactionI {
-//   id: string
-//   avatar: string
-//   login: string
-//   name: string
-//   company: string
-//   city: string
-//   progress: number
-//   created: string
-//   created_mm_dd_yyyy: string
-// }
-
-const clientBarItems = computed(() => mainStore.clients.slice(0, 4))
-
-const transactionBarItems = computed(() => mainStore.history)
 </script>

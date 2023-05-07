@@ -25,6 +25,11 @@ const props = defineProps({
     type: [String, Number, Boolean],
     default: null,
   },
+  hasFooter: {
+    type: Boolean,
+    default: true,
+    required: false,
+  },
 })
 
 const emit = defineEmits(['update:modelValue', 'cancel', 'confirm'])
@@ -69,20 +74,22 @@ window.addEventListener('keydown', (e) => {
       </CardBoxComponentTitle>
 
       <div class="space-y-3">
-        <slot />
+        <slot name="body" />
       </div>
 
-      <template #footer>
-        <BaseButtons>
-          <BaseButton :label="buttonLabel" :color="button" @click="confirm" />
-          <BaseButton
-            v-if="hasCancel"
-            label="Cancel"
-            :color="button"
-            outline
-            @click="cancel"
-          />
-        </BaseButtons>
+      <template #footer v-if="hasFooter">
+        <slot name="footer">
+          <BaseButtons>
+            <BaseButton :label="buttonLabel" :color="button" @click="confirm" />
+            <BaseButton
+              v-if="hasCancel"
+              label="Cancel"
+              :color="button"
+              outline
+              @click="cancel"
+            />
+          </BaseButtons>
+        </slot>
       </template>
     </CardBox>
   </OverlayLayer>

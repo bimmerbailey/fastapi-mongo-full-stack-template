@@ -4,6 +4,7 @@ import { saveLocalToken, removeLocalToken, getLocalToken } from '@/utils'
 import type { UserProfile, AuthState, LoginResults } from '@/interfaces/Auth'
 import { computed, ref } from 'vue'
 import router from '@/router'
+import type { AxiosError } from 'axios'
 
 export const useAuthStore = defineStore('Auth', () => {
   const authState = ref<AuthState>({
@@ -27,9 +28,7 @@ export const useAuthStore = defineStore('Auth', () => {
       .then(async () => {
         await login(username, password)
       })
-      .catch((err) => {
-        authState.value.AuthError = true
-        removeLocalToken()
+      .catch((err: AxiosError) => {
         throw err
       })
   }

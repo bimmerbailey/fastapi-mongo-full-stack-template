@@ -3,6 +3,16 @@
     <card-box-modal title="Error" v-model="error" button="danger">{{
       error
     }}</card-box-modal>
+    <card-box-modal
+      title="Sign Up"
+      v-model="signUpModal"
+      button-label="Sign Up"
+      :has-footer="false"
+    >
+      <template #body>
+        <sign-up @sign-up-close="signUpModal = false" />
+      </template>
+    </card-box-modal>
     <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
       <CardBox :class="cardClass" is-form @submit.prevent>
         <FormField label="Login" help="Please enter your login">
@@ -25,14 +35,19 @@
         </FormField>
 
         <template #footer>
-          <BaseButtons>
+          <BaseButtons class="justify-center">
             <BaseButton
               @click="Login"
               type="submit"
               color="info"
               label="Login"
             />
-            <BaseButton color="info" outline label="Clear" />
+            <BaseButton
+              color="info"
+              outline
+              label="Sign Up"
+              @click="signUpModal = !signUpModal"
+            />
           </BaseButtons>
         </template>
       </CardBox>
@@ -51,6 +66,7 @@ import BaseButton from '@/components/BaseButton.vue'
 import BaseButtons from '@/components/BaseButtons.vue'
 import LayoutGuest from '@/layouts/LayoutGuest.vue'
 import CardBoxModal from '@/components/CardBoxModal.vue'
+import SignUp from '@/components/SignUp.vue'
 
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
@@ -60,25 +76,8 @@ const store = useAuthStore()
 
 const email = ref()
 const password = ref()
-// const passwordCheck = ref('')
 const error = ref()
-
-// async function SignUp() {
-//   if (password.value == passwordCheck.value) {
-//     return await store
-//       .createUser(email.value, password.value)
-//       .then(async () => {
-//         await router.push('/')
-//       })
-//       .catch((err) => {
-//         error.value = true
-//         errorMessage.value = err.detail || err.message
-//       })
-//   } else {
-//     error.value = true
-//     errorMessage.value = 'Passwords must match'
-//   }
-// }
+const signUpModal = ref(false)
 
 async function Login() {
   if (!email.value || !password.value) {
