@@ -8,6 +8,22 @@ stop() {
   docker-compose down
 }
 
+lint_frontend() {
+  docker compose run --rm frontend yarn lint
+} 
+
+format_frontend() {
+    docker compose run --rm frontend yarn format
+}
+
+lint_backend() {
+  docker compose run --rm backend poetry run black app --check
+} 
+
+format_backend() {
+    docker compose run --rm backend poetry run black app
+}
+
 dump() {
   docker-compose down --volumes
 }
