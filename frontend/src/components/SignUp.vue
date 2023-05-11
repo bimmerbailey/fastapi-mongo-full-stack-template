@@ -14,18 +14,18 @@ import type { AxiosError } from 'axios'
 const router = useRouter()
 const store = useAuthStore()
 
-const email: Ref<string | null> = ref(null)
-const password: Ref<string | null> = ref(null)
-const passwordCheck: Ref<string | null> = ref(null)
-const error: Ref<AxiosError | string | null> = ref(null)
+const email: Ref<string | undefined> = ref(undefined)
+const password: Ref<string | undefined> = ref(undefined)
+const passwordCheck: Ref<string | undefined> = ref(undefined)
+const error: Ref<AxiosError | string | undefined> = ref(undefined)
 
 const emit = defineEmits(['signUpClose'])
 
 const close = () => {
-  error.value = null
-  email.value = null
-  password.value = null
-  passwordCheck.value = null
+  error.value = undefined
+  email.value = undefined
+  password.value = undefined
+  passwordCheck.value = undefined
   emit('signUpClose')
 }
 
