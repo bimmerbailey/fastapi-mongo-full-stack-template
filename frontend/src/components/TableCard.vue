@@ -1,24 +1,33 @@
-<script setup>
+<script setup lang="ts">
+import type { PropType } from 'vue'
+
 import CardBox from '@/components/CardBox.vue'
+
+type itemsType = {
+  [key: string]: any
+  id: string
+}
 
 defineProps({
   items: {
-    type: Array,
+    type: Array as PropType<itemsType[]>,
     default: null,
   },
   headers: {
-    type: Array,
+    type: Array as PropType<string[]>,
     default: null,
   },
 })
 </script>
-Ï
+
 <template>
   <card-box class="mb-6" has-table>
     <table>
       <thead>
         <tr>
-          <th v-for="header in headers" :key="header">{{ header }}</th>
+          <th v-for="header in headers" :key="header.toString()">
+            {{ header }}
+          </th>
         </tr>
       </thead>
       <tbody>
