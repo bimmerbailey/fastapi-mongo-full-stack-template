@@ -18,8 +18,16 @@ jobs:
       - name: Run backend Lint
         run: bin/dev lint_backend
 
+      - name: Set Node.js 18.2
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.2
+      
+      - name: yarn install
+        run: yarn install
+
       - name: Run frontend Lint
-        run: bin/dev lint_frontend
+        run: ( cd frontend ; yarn lint:all )
         
         
 #  build:

@@ -8,7 +8,11 @@
     "preview": "vite preview --port 5050",
     "typecheck": "vue-tsc --noEmit",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
-    "format": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    "pretty": "prettier --config .prettierrc.json -l 'src/**/*.{js,ts,css,scss,md,vue}'",
+    "lint:all": "yarn lint && yarn pretty",
+    "lint:fix": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "pretty:fix": "prettier --config .prettierrc.json -w 'src/**/*.{js,ts,css,scss,md,vue}'",
+    "format": "yarn lint:fix && yarn pretty:fix"
   },
   "dependencies": {
     "@mdi/js": "^7.0.96",
