@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 defineProps({
   custom: Boolean,
   first: Boolean,

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { mdiChevronUp, mdiChevronDown, mdiAlertCircleOutline } from '@mdi/js'
 import PillTag from '@/components/PillTag.vue'

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -9,7 +9,8 @@ const props = defineProps({
   type: {
     type: String,
     default: 'checkbox',
-    validator: (value) => ['checkbox', 'radio', 'switch'].includes(value),
+    validator: (value: string) =>
+      ['checkbox', 'radio', 'switch'].includes(value),
   },
   label: {
     type: String,

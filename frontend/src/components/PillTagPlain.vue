@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import BaseIcon from '@/components/BaseIcon.vue'
 
 defineProps({
@@ -25,7 +25,7 @@ defineProps({
       h="h-4"
       w="w-4"
       :class="small ? 'mr-1' : 'mr-2'"
-      :size="small ? 14 : null"
+      :size="small ? 14 : undefined"
     />
     <span>{{ label }}</span>
   </div>

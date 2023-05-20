@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { mdiCog } from '@mdi/js'
 import CardBox from '@/components/CardBox.vue'
 import NumberDynamic from '@/components/NumberDynamic.vue'

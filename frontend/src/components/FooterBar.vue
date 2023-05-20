@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { containerMaxW } from '@/styles/config'
 import BaseLevel from '@/components/BaseLevel.vue'
 import { businessInfo } from '@/business'
@@ -10,7 +10,6 @@ const year = new Date().getFullYear()
   <footer class="py-2 px-6" :class="containerMaxW">
     <BaseLevel>
       <div class="text-center md:text-left">
-        <!--        TODO: Business info here, website and logo-->
         <b
           >&copy;{{ year }},
           <a :href="businessInfo.website" target="_blank">{{

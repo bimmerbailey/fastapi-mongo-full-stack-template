@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import BaseIcon from '@/components/BaseIcon.vue'
 
 defineProps({
@@ -18,7 +18,7 @@ defineProps({
 
 const emit = defineEmits(['button-click'])
 
-const buttonClick = (event) => {
+const buttonClick = (event: Event) => {
   emit('button-click', event)
 }
 </script>

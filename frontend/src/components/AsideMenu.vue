@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import AsideMenuLayer from '@/components/base-components/AsideMenuLayer.vue'
 import OverlayLayer from '@/components/OverlayLayer.vue'
 
@@ -13,11 +13,11 @@ defineProps({
 
 const emit = defineEmits(['menu-click', 'aside-lg-close-click'])
 
-const menuClick = (event, item) => {
+const menuClick = (event: Event, item: string | number) => {
   emit('menu-click', event, item)
 }
 
-const asideLgCloseClick = (event) => {
+const asideLgCloseClick = (event: Event) => {
   emit('aside-lg-close-click', event)
 }
 </script>

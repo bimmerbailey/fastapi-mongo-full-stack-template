@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useStyleStore } from '@/stores/style'
 
 defineProps({
@@ -12,9 +12,13 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['overlay-click'])
+// const emit = defineEmits(['overlay-click'])
 
-const overlayClick = (event) => {
+const emit = defineEmits<{
+  (e: 'overlay-click', event: Event): void
+}>()
+
+const overlayClick = (event: Event) => {
   emit('overlay-click', event)
 }
 

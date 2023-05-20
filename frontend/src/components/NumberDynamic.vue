@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch, onMounted } from 'vue'
 import numeral from 'numeral'
 
@@ -29,7 +29,7 @@ const newValueFormatted = computed(() =>
 
 const value = computed(() => props.value)
 
-const grow = (m) => {
+const grow = (m: number) => {
   const v = Math.ceil(newValue.value + m)
 
   if (v > value.value) {

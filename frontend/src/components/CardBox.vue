@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed, useSlots } from 'vue'
 import CardBoxComponentBody from '@/components/CardBoxComponentBody.vue'
 import CardBoxComponentFooter from '@/components/CardBoxComponentFooter.vue'
@@ -39,7 +39,7 @@ const componentClass = computed(() => {
   return base
 })
 
-const submit = (event) => {
+const submit = (event: Event) => {
   emit('submit', event)
 }
 </script>

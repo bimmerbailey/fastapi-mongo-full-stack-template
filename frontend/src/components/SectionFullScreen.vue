@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { useStyleStore } from '@/stores/style'
 import {
@@ -11,7 +11,7 @@ const props = defineProps({
   bg: {
     type: String,
     required: true,
-    validator: (value) => ['purplePink', 'pinkRed'].includes(value),
+    validator: (value: string) => ['purplePink', 'pinkRed'].includes(value),
   },
 })
 

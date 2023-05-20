@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { mdiClose } from '@mdi/js'
 import BaseButton from '@/components/BaseButton.vue'
@@ -32,14 +32,20 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:modelValue', 'cancel', 'confirm'])
+// const emit = defineEmits(['update:modelValue', 'cancel', 'confirm'])
+
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: any): void
+  (e: 'cancel'): void
+  (e: 'confirm'): void
+}>()
 
 const value = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value),
 })
 
-const confirmCancel = (mode) => {
+const confirmCancel = (mode: any | null) => {
   value.value = false
   emit(mode)
 }

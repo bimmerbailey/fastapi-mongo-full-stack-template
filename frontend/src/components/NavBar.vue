@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { mdiClose, mdiDotsVertical } from '@mdi/js'
 import { containerMaxW } from '@/styles/config'
@@ -13,9 +13,13 @@ defineProps({
   },
 })
 
-const emit = defineEmits(['menu-click'])
+// const emit = defineEmits(['menu-click'])
 
-const menuClick = (event, item) => {
+const emit = defineEmits<{
+  (e: 'menu-click', event: Event, item: any): void
+}>()
+
+const menuClick = (event: Event, item: any) => {
   emit('menu-click', event, item)
 }
 

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import { colorsBgLight, colorsOutline } from '@/styles/colors'
 import PillTagPlain from '@/components/PillTagPlain.vue'

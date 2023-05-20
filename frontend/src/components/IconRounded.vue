@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { colorsText, colorsBgLight } from '@/styles/colors'
 import BaseIcon from '@/components/BaseIcon.vue'
 

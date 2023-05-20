@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 import FormCheckRadio from '@/components/FormCheckRadio.vue'
 
@@ -14,7 +14,8 @@ const props = defineProps({
   type: {
     type: String,
     default: 'checkbox',
-    validator: (value) => ['checkbox', 'radio', 'switch'].includes(value),
+    validator: (value: string) =>
+      ['checkbox', 'radio', 'switch'].includes(value),
   },
   componentClass: {
     type: String,
