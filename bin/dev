@@ -1,11 +1,11 @@
 #!/bin/bash
 
 start() {
-  docker-compose up backend frontend "$@"
+  docker compose up backend frontend "$@"
 }
 
 stop() {
-  docker-compose down
+  docker compose down
 }
 
 lint_frontend() {
@@ -25,18 +25,18 @@ format_backend() {
 }
 
 dump() {
-  docker-compose down --volumes
+  docker compose down --volumes
 }
 
 dev_data () {
-  docker-compose run --rm backend python3 app/dev_data.py
+  docker compose run --rm backend python3 app/dev_data.py
 }
 
 shell() {
   if [[ "$1" = "mongo" ]]; then
-    docker-compose exec -it mongo mongosh -u mongod -p Password123!
+    docker compose exec -it mongo mongosh -u mongod -p Password123!
   else
-    docker-compose exec -it "$1" /bin/sh
+    docker compose exec -it "$1" /bin/sh
   fi
 }
 

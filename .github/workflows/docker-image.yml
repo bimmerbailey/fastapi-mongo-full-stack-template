@@ -25,7 +25,8 @@ jobs:
 
       - name: Frontend style check
         run: |
-          ( cd frontend ; yarn install )
+          cd frontend
+          yarn install
           yarn lint:all
         
         
