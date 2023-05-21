@@ -14,7 +14,7 @@ COPY . .
 
 RUN yarn build
 
-CMD sh -c "npm rebuild esbuild && yarn dev"
+CMD ["yarn", "dev"]
 
 FROM nginx:1.23.3-alpine as production-build
 COPY nginx.conf /etc/nginx/nginx.conf
