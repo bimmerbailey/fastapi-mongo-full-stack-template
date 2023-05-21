@@ -11,23 +11,22 @@ jobs:
       - name: Run Backend Tests
         run: bin/test
     
-  lint:
+  style:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Run backend Lint
+      - name: Backend style check
         run: bin/dev lint_backend
 
       - name: Set Node.js 18.2
         uses: actions/setup-node@v3
         with:
           node-version: 18.2
-      
-      - name: yarn install
-        run: yarn install
 
-      - name: Run frontend Lint
-        run: ( cd frontend ; yarn lint:all )
+      - name: Frontend style check
+        run: |
+          ( cd frontend ; yarn install )
+          yarn lint:all
         
         
 #  build:
