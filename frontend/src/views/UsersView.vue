@@ -37,8 +37,8 @@ const errors = ref(null)
 
 const userHeaders = ref(['created_date', 'email', 'is_admin'])
 
-function getUsers() {
-  return usersApi
+async function getUsers(): Promise<Profile> {
+  return await usersApi
     .getUsers()
     .then((res: Profile[]) => {
       return (users.value = res)
@@ -47,8 +47,8 @@ function getUsers() {
       return (errors.value = err)
     })
 }
-onMounted(() => {
-  getUsers()
+onMounted(async () => {
+  await getUsers()
 })
 </script>
 
