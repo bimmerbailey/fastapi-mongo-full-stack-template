@@ -1,42 +1,23 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends ItemType">
 import type { PropType } from 'vue'
 
-import CardBox from '@/components/CardBox.vue'
+import type { TableFieldsI, ItemType } from '@/interfaces/Components'
 
-type itemsType = {
-  [key: string]: any
-  id: string
-}
+import CardBox from '@/components/CardBox.vue'
+import TableBase from '@/components/base-components/TableBase.vue'
 
 defineProps({
   items: {
-    type: Array as PropType<itemsType[]>,
-    default: null,
+    type: Array as PropType<T[]>,
   },
-  headers: {
-    type: Array as PropType<string[]>,
-    default: null,
+  fields: {
+    type: Array as PropType<TableFieldsI[]>,
   },
 })
 </script>
 
 <template>
   <card-box class="mb-6" has-table>
-    <table>
-      <thead>
-        <tr>
-          <th v-for="header in headers" :key="header.toString()">
-            {{ header }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in items" :key="item.id">
-          <td v-for="header in headers" :key="`${item.id}_${header}`">
-            {{ item[header.toLowerCase()] }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <table-base :items="items" :fields="fields" />
   </card-box>
 </template>

@@ -1,14 +1,17 @@
+import type { AxiosError, AxiosResponse } from 'axios'
+
 import api from './base'
+import type { LoginResults } from '@/interfaces/Auth'
 
 export const AuthApi = {
   async login(email: string, password: string) {
     const params = new URLSearchParams({ username: email, password: password })
     return await api
       .post('login', params)
-      .then((resp) => {
+      .then((resp: AxiosResponse<LoginResults>) => {
         return resp.data
       })
-      .catch((err) => {
+      .catch((err: AxiosError) => {
         throw err
       })
   },

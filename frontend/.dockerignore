@@ -2,3 +2,5 @@ dist
 Dockerfile
 README.md
 node_modules
+yarn.lock
+.yarn

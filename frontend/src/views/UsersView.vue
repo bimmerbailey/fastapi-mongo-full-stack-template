@@ -7,7 +7,7 @@
         main
       ></section-title-line-with-button>
       <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
-        <table-card :items="users" :headers="userHeaders" />
+        <table-card :items="users" :fields="userHeaders" />
       </div>
     </section-main>
   </layout-authenticated>
@@ -35,7 +35,11 @@ interface Profile {
 const users = ref([] as Profile[])
 const errors = ref(null)
 
-const userHeaders = ref(['created_date', 'email', 'is_admin'])
+const userHeaders = ref([
+  { value: 'created_date', text: 'Created Date' },
+  { value: 'email', text: 'Email' },
+  { value: 'is_admin', text: 'Is Admin' },
+])
 
 async function getUsers(): Promise<Profile> {
   return await usersApi
