@@ -4,7 +4,7 @@ import { computed } from 'vue'
 import { useStyleStore } from '@/stores/style'
 import AsideMenuList from '@/components/base-components/AsideMenuList.vue'
 import AsideMenuItem from '@/components/base-components/AsideMenuItem.vue'
-import BaseIcon from '@/components/BaseIcon.vue'
+import BaseIcon from '@/components/base-components/BaseIcon.vue'
 
 defineProps({
   menu: {

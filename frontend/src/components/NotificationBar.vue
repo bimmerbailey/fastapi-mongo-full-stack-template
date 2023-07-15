@@ -2,9 +2,9 @@
 import { ref, computed, useSlots } from 'vue'
 import { mdiClose } from '@mdi/js'
 import { colorsBgLight, colorsOutline } from '@/styles/colors'
-import BaseLevel from '@/components/BaseLevel.vue'
-import BaseIcon from '@/components/BaseIcon.vue'
-import BaseButton from '@/components/BaseButton.vue'
+import BaseLevel from '@/components/base-components/BaseLevel.vue'
+import BaseIcon from '@/components/base-components/BaseIcon.vue'
+import BaseButton from '@/components/base-components/BaseButton.vue'
 
 const props = defineProps({
   icon: {

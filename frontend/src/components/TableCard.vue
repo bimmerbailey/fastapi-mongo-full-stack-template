@@ -4,7 +4,7 @@ import type { PropType } from 'vue'
 import type { TableFieldsI, ItemType } from '@/interfaces/Components'
 
 import CardBox from '@/components/CardBox.vue'
-import TableBase from '@/components/base-components/TableBase.vue'
+import BaseTable from '@/components/base-components/BaseTable.vue'
 
 defineProps({
   items: {
@@ -18,6 +18,6 @@ defineProps({
 
 <template>
   <card-box class="mb-6" has-table>
-    <table-base :items="items" :fields="fields" />
+    <base-table :items="items" :fields="fields" />
   </card-box>
 </template>

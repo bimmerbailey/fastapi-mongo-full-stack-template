@@ -4,10 +4,10 @@ import { RouterLink } from 'vue-router'
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useStyleStore } from '@/stores/style'
 import { useMainStore } from '@/stores/main'
-import BaseIcon from '@/components/BaseIcon.vue'
+import BaseIcon from '@/components/base-components/BaseIcon.vue'
 import UserAvatarCurrentUser from '@/components/UserAvatarCurrentUser.vue'
 import NavBarMenuList from '@/components/base-components/NavBarMenuList.vue'
-import BaseDivider from '@/components/BaseDivider.vue'
+import BaseDivider from '@/components/base-components/BaseDivider.vue'
 
 const props = defineProps({
   item: {
