@@ -118,5 +118,6 @@ const componentClass = computed(() => {
   >
     <BaseIcon v-if="icon" :path="icon" :size="iconSize" />
     <span v-if="label" :class="labelClass">{{ label }}</span>
+    <slot />
   </component>
 </template>
