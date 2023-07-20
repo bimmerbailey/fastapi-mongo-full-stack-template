@@ -8,7 +8,7 @@ from app.config.logging import setup_logging, setup_fastapi
 from app.config.config import settings
 from app.database.init_db import connect_to_mongo, close_mongo_connection
 
-setup_logging(json_logs=False, log_level=settings.log_level)
+setup_logging(json_logs=settings.json_logs, log_level=settings.log_level)
 app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",

@@ -21,7 +21,7 @@ class UserCreate(UserBase):
     password: str
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "email": "jdoe@example.com",
                 "password": "ExAmplEpaSswOrd12",

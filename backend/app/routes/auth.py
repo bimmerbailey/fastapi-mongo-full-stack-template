@@ -9,6 +9,7 @@ from app.schemas.users import Token, UserBase
 from app import oauth, utils
 from app.config.config import settings
 from app.crud.users import user
+from app.oauth import get_current_user
 
 
 router = APIRouter(tags=["Authentication"], prefix="/api/v1")
@@ -80,3 +81,8 @@ def forgot_password(req: Request):
         )
 
     return forgotten_user.__dict__
+
+
+@router.get("/update/password")
+def update_password(current_user: Users = Depends(get_current_user)):
+    pass
