@@ -2,7 +2,7 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { getButtonColor } from '@/styles/colors'
-import BaseIcon from '@/components/BaseIcon.vue'
+import BaseIcon from '@/components/base-components/BaseIcon.vue'
 
 const props = defineProps({
   label: {
@@ -118,5 +118,6 @@ const componentClass = computed(() => {
   >
     <BaseIcon v-if="icon" :path="icon" :size="iconSize" />
     <span v-if="label" :class="labelClass">{{ label }}</span>
+    <slot />
   </component>
 </template>

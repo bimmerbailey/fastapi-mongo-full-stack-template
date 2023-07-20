@@ -1,6 +1,5 @@
 from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient
-from motor.core import AgnosticDatabase, AgnosticCollection
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection, AsyncIOMotorDatabase
 import structlog
 
 from app.config.config import settings
@@ -12,7 +11,7 @@ logger: structlog.stdlib.BoundLogger = structlog.getLogger(__name__)
 class DataBase:
     client: AsyncIOMotorClient = None
 
-    def get_db(self) -> AgnosticDatabase | None:
+    def get_db(self) -> AsyncIOMotorDatabase | None:
         if self.client:
             return self.client[settings.database_name]
         else:
@@ -20,7 +19,7 @@ class DataBase:
 
     def get_collection(
         self, collection_name: str
-    ) -> AgnosticCollection | None:
+    ) -> AsyncIOMotorCollection | None:
         db = self.get_db()
         if db:
             return db[collection_name]

@@ -7,7 +7,7 @@ import {
   mdiCreditCardOutline,
 } from '@mdi/js'
 import CardBox from '@/components/CardBox.vue'
-import BaseLevel from '@/components/BaseLevel.vue'
+import BaseLevel from '@/components/base-components/BaseLevel.vue'
 import PillTag from '@/components/PillTag.vue'
 import IconRounded from '@/components/IconRounded.vue'
 

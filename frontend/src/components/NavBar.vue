@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import { mdiClose, mdiDotsVertical } from '@mdi/js'
 import { containerMaxW } from '@/styles/config'
-import BaseIcon from '@/components/BaseIcon.vue'
+import BaseIcon from '@/components/base-components/BaseIcon.vue'
 import NavBarMenuList from '@/components/base-components/NavBarMenuList.vue'
 import NavBarItemPlain from '@/components/base-components/NavBarItemPlain.vue'
 

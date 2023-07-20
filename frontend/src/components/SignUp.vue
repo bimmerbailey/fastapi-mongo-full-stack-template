@@ -7,8 +7,8 @@ import FormControl from '@/components/FormControl.vue'
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import BaseButtons from '@/components/BaseButtons.vue'
-import BaseButton from '@/components/BaseButton.vue'
+import BaseButtons from '@/components/base-components/BaseButtons.vue'
+import BaseButton from '@/components/base-components/BaseButton.vue'
 import type { AxiosError } from 'axios'
 
 const router = useRouter()

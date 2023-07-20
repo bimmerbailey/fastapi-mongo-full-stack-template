@@ -7,7 +7,14 @@
         main
       ></section-title-line-with-button>
       <div class="grid grid-cols-1 lg:grid-cols-1 gap-6 mb-6">
-        <table-card :items="users" :fields="userHeaders" />
+        <table-card
+          :items="users"
+          :fields="userHeaders"
+          pagination
+          :total-rows="users.length"
+          v-model="currentPage"
+          :per-page="postsPerPage"
+        />
       </div>
     </section-main>
   </layout-authenticated>
@@ -35,6 +42,9 @@ interface Profile {
 const users = ref([] as Profile[])
 const errors = ref(null)
 
+const currentPage = ref(1)
+const postsPerPage = ref(2)
+
 const userHeaders = ref([
   { value: 'created_date', text: 'Created Date' },
   { value: 'email', text: 'Email' },
@@ -44,7 +54,7 @@ const userHeaders = ref([
 async function getUsers(): Promise<Profile> {
   return await usersApi
     .getUsers()
-    .then((res: Profile[]) => {
+    .then((res: Array<Profile>) => {
       return (users.value = res)
     })
     .catch((err) => {

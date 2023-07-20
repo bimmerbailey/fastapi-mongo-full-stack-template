@@ -1,7 +1,7 @@
 from typing import Generic, Type, TypeVar
 
 from beanie import Document, PydanticObjectId
-from motor.core import ClientSession
+from motor.motor_asyncio import AsyncIOMotorClientSession
 from pydantic import BaseModel
 
 ModelType = TypeVar("ModelType", bound=Document)
@@ -20,7 +20,7 @@ class CrudBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     async def get_all(
         self,
-        session: ClientSession | None = None,
+        session: AsyncIOMotorClientSession | None = None,
         skip: int = 0,
         limit: int = 20,
     ) -> dict[str, ModelType | int]:
@@ -31,12 +31,16 @@ class CrudBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return {"items": items, "total": len(items)}
 
     async def get_one(
-        self, model_id: PydanticObjectId, session: ClientSession | None = None
+        self,
+        model_id: PydanticObjectId,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> ModelType | None:
         return await self.model.get(model_id, session=session)
 
     async def create(
-        self, obj_in: CreateSchemaType, session: ClientSession | None = None
+        self,
+        obj_in: CreateSchemaType,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> ModelType:
         db_obj = self.model(**obj_in)
         await self.model.insert(session=session)
@@ -46,10 +50,10 @@ class CrudBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self,
         update_obj: UpdateSchemaType,
         model_id: PydanticObjectId,
-        session: ClientSession | None = None,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> ModelType | None:
         item = await self.model.get(model_id, session=session)
-        for key in update_obj.dict():
+        for key in update_obj.model_dump():
             if update_obj[key]:
                 item[key] = update_obj[key]
         # NOTE: Will only update NOT create, if using save() it will create if obj doesn't exist
@@ -57,18 +61,18 @@ class CrudBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return item
 
     async def remove(
-        self, model_id: PydanticObjectId, session: ClientSession | None = None
+        self,
+        model_id: PydanticObjectId,
+        session: AsyncIOMotorClientSession | None = None,
     ) -> ModelType | None:
         item = await self.model.get(model_id, session=session)
-        await item.delete(session=session)
-        return item
 
-    # async def aggregate(self, session: ClientSession | None, query: dict) -> dict
-    #     db: AgnosticCollection = session.client[settings.database_name][self.collection]
-    #     items = await db.aggregate(pipeline=query, session=session).to_list()
-    #     if not items:
-    #         return None
-    #     return {
-    #         "items": [self.model(**i) for i in items],
-    #         "total": len(items)
-    #     }
+        return await item.delete(session=session)
+
+    async def aggregate(
+        self, session: AsyncIOMotorClientSession | None, pipeline: list
+    ) -> dict:
+        items = await self.model.aggregate(
+            aggregation_pipeline=pipeline, session=session
+        )
+        return {"items": [self.model(**i) for i in items], "total": len(items)}

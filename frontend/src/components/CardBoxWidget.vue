@@ -2,10 +2,10 @@
 import { mdiCog } from '@mdi/js'
 import CardBox from '@/components/CardBox.vue'
 import NumberDynamic from '@/components/NumberDynamic.vue'
-import BaseIcon from '@/components/BaseIcon.vue'
-import BaseLevel from '@/components/BaseLevel.vue'
+import BaseIcon from '@/components/base-components/BaseIcon.vue'
+import BaseLevel from '@/components/base-components/BaseLevel.vue'
 import PillTagTrend from '@/components/PillTagTrend.vue'
-import BaseButton from '@/components/BaseButton.vue'
+import BaseButton from '@/components/base-components/BaseButton.vue'
 
 defineProps({
   number: {

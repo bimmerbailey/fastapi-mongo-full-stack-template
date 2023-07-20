@@ -27,7 +27,7 @@ async def client() -> AsyncClient:
     db = db_client.get_db()
     await db.drop_collection("users")
 
-    async with AsyncClient(app=app, base_url="http://localhost:3000") as client:
+    async with AsyncClient(app=app, base_url="http://test-server:3000") as client:
         yield client
 
 

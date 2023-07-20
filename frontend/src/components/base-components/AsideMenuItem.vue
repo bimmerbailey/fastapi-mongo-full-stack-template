@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router'
 import { useStyleStore } from '@/stores/style'
 import { mdiMinus, mdiPlus } from '@mdi/js'
 import { getButtonColor } from '@/styles/colors'
-import BaseIcon from '@/components/BaseIcon.vue'
+import BaseIcon from '@/components/base-components/BaseIcon.vue'
 import AsideMenuList from '@/components/base-components/AsideMenuList.vue'
 
 const props = defineProps({

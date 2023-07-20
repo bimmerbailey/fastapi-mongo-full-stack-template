@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BaseIcon from '@/components/BaseIcon.vue'
+import BaseIcon from '@/components/base-components/BaseIcon.vue'
 
 defineProps({
   title: {
