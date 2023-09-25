@@ -1,2 +1,1 @@
-from . import config
-from . import logging
+from . import config, logging

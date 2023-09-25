@@ -1,16 +1,15 @@
-from fastapi import APIRouter, Depends, status, HTTPException, Request
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from fastapi.responses import JSONResponse
-from starlette.responses import RedirectResponse
 import structlog
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi.responses import JSONResponse
+from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from starlette.responses import RedirectResponse
 
-from app.models.users import Users
-from app.schemas.users import Token, UserBase
 from app import oauth, utils
 from app.config.config import settings
 from app.crud.users import user
+from app.models.users import Users
 from app.oauth import get_current_user
-
+from app.schemas.users import Token, UserBase
 
 router = APIRouter(tags=["Authentication"], prefix="/api/v1")
 logger: structlog.stdlib.BoundLogger = structlog.getLogger(__name__)
@@ -31,9 +30,7 @@ async def login(user_credentials: OAuth2PasswordRequestForm = Depends()):
             detail=f"Invalid Credentials",
         )
 
-    access_token = oauth.create_access_token(
-        data={"user_id": str(auth_user.id)}
-    )
+    access_token = oauth.create_access_token(data={"user_id": str(auth_user.id)})
 
     response = JSONResponse(
         content={

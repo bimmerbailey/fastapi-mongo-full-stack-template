@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
 from typing import Optional
 
-from fastapi import Depends, status, HTTPException, Cookie
+from fastapi import Cookie, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-
 from jose import JWTError, jwt
 
-from app import schemas, models, crud
+from app import crud, models, schemas
 from app.config.config import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/login")

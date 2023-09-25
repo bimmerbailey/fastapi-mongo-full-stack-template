@@ -1,22 +1,21 @@
-FROM node:18.2-alpine3.15 as build
+FROM node:18.2-alpine3.15 as base
 
 WORKDIR /frontend
 
-RUN npm install -g npm
-
 COPY package*.json .
-
-EXPOSE 3000
-
 RUN yarn install
 
 COPY . .
 
+FROM base as development
+EXPOSE 3000
+
+ENTRYPOINT yarn dev
+
+FROM base as build
 RUN yarn build
 
-CMD ["sh", "-c", "npm rebuild esbuild && yarn dev"]
-
-FROM nginx:1.23.3-alpine as production-build
+FROM nginx:1.23.3-alpine as production
 COPY nginx.conf /etc/nginx/nginx.conf
 
 RUN rm -rf /usr/share/nginx/html/*

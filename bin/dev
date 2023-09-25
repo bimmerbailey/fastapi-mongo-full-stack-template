@@ -17,11 +17,11 @@ format_frontend() {
 }
 
 lint_backend() {
-  docker compose run --rm backend poetry run black app --check
+  docker compose run --rm backend black app --check
 } 
 
 format_backend() {
-    docker compose run --rm backend poetry run black app
+    docker compose run --rm backend black app
 }
 
 dump() {

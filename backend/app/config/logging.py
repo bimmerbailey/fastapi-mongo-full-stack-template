@@ -2,10 +2,10 @@ import logging
 import sys
 import time
 
+import structlog
 from asgi_correlation_id import CorrelationIdMiddleware
 from asgi_correlation_id.context import correlation_id
 from fastapi import FastAPI, Request, Response
-import structlog
 from structlog.types import EventDict, Processor
 from uvicorn.protocols.utils import get_path_with_query_string
 
@@ -137,9 +137,7 @@ def setup_fastapi(app: FastAPI):
             response = await call_next(request)
         except Exception:
             # TODO: Validate that we don't swallow exceptions (unit test?)
-            structlog.stdlib.get_logger("api.error").exception(
-                "Uncaught exception"
-            )
+            structlog.stdlib.get_logger("api.error").exception("Uncaught exception")
             raise
         finally:
             process_time = time.perf_counter_ns() - start_time

@@ -1,8 +1,8 @@
 from typing import Generic, Type, TypeVar
 
 from beanie import Document, PydanticObjectId
-from motor.motor_asyncio import AsyncIOMotorClientSession
 from pydantic import BaseModel
+from pymongo.client_session import ClientSession
 
 ModelType = TypeVar("ModelType", bound=Document)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseModel)
@@ -20,7 +20,7 @@ class CrudBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     async def get_all(
         self,
-        session: AsyncIOMotorClientSession | None = None,
+        session: ClientSession | None = None,
         skip: int = 0,
         limit: int = 20,
     ) -> dict[str, ModelType | int]:
@@ -33,14 +33,14 @@ class CrudBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     async def get_one(
         self,
         model_id: PydanticObjectId,
-        session: AsyncIOMotorClientSession | None = None,
+        session: ClientSession | None = None,
     ) -> ModelType | None:
         return await self.model.get(model_id, session=session)
 
     async def create(
         self,
         obj_in: CreateSchemaType,
-        session: AsyncIOMotorClientSession | None = None,
+        session: ClientSession | None = None,
     ) -> ModelType:
         db_obj = self.model(**obj_in)
         await self.model.insert(session=session)
@@ -50,7 +50,7 @@ class CrudBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self,
         update_obj: UpdateSchemaType,
         model_id: PydanticObjectId,
-        session: AsyncIOMotorClientSession | None = None,
+        session: ClientSession | None = None,
     ) -> ModelType | None:
         item = await self.model.get(model_id, session=session)
         for key in update_obj.model_dump():
@@ -63,14 +63,14 @@ class CrudBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     async def remove(
         self,
         model_id: PydanticObjectId,
-        session: AsyncIOMotorClientSession | None = None,
+        session: ClientSession | None = None,
     ) -> ModelType | None:
         item = await self.model.get(model_id, session=session)
 
         return await item.delete(session=session)
 
     async def aggregate(
-        self, session: AsyncIOMotorClientSession | None, pipeline: list
+        self, session: ClientSession | None, pipeline: list
     ) -> dict:
         items = await self.model.aggregate(
             aggregation_pipeline=pipeline, session=session

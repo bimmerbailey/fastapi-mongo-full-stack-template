@@ -1,11 +1,11 @@
 from typing import List
 
-from fastapi import status, APIRouter, HTTPException
-from email_validator import validate_email, EmailNotValidError
 import structlog
+from email_validator import EmailNotValidError, validate_email
+from fastapi import APIRouter, HTTPException, status
 
-from app.schemas.users import UserOut, UserCreate
 from app.crud.users import user
+from app.schemas.users import UserCreate, UserOut
 
 router = APIRouter(prefix="/api/v1/users", tags=["Users"])
 logger: structlog.stdlib.BoundLogger = structlog.getLogger(__name__)

@@ -4,9 +4,10 @@ services:
   frontend:
     build: 
       context: ./frontend
-      target: build
+      target: development
     volumes:
-      - "./frontend:/frontend"
+      - "./frontend/src:/frontend/src"
+      - "./frontend/public:/frontend/public"
     ports:
       - "3000:3000"
   
@@ -19,7 +20,8 @@ services:
     ports:
       - "8000:8000"
     volumes:
-    - "./backend:/backend"
+    - "./backend/app:/backend/app"
+    - "./backend/tests:/backend/tests"
 
   mongo:
     image: mongo:6.0.5

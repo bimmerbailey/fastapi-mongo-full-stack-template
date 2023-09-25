@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "app"
+name = "mongo-fullstack-template"
 version = "0.1.0"
 description = "Boilerplate backend for full stack app"
 authors = ["Michael Bailey <mbailey1302@gmail.com>"]
@@ -14,10 +14,10 @@ gunicorn = "^21.2.0"
 beanie = "^1.20.0"
 asgi-correlation-id = "^4.2.0"
 passlib = {version = "^1.7.4", extras = ["bcrypt"]}
-fastapi = {version = "^0.100.0", extras = ["starlette"]}
 pydantic = {version = "^2.0.3", extras = ["email"]}
 pydantic-settings = "^2.0.2"
 python-multipart = "^0.0.6"
+fastapi = "^0.103.1"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -28,9 +28,6 @@ faker = "^17.6.0"
 black = "^23.3.0"
 mypy = "^1.2.0"
 httpx = "^0.24.1"
-
-[tool.black]
-line-length=79
 
 [tool.isort]
 profile="black"

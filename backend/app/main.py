@@ -3,10 +3,11 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routes import auth, users
-from app.config.logging import setup_logging, setup_fastapi
 from app.config.config import settings
-from app.database.init_db import connect_to_mongo, close_mongo_connection
+from app.config.logging import setup_fastapi, setup_logging
+from app.database.init_db import close_mongo_connection, connect_to_mongo
+from app.routes.auth import router as auth_router
+from app.routes.users import router as users_router
 
 setup_logging(json_logs=settings.json_logs, log_level=settings.log_level)
 app = FastAPI(
@@ -32,5 +33,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 setup_fastapi(app)
-app.include_router(auth.router)
-app.include_router(users.router)
+app.include_router(auth_router)
+app.include_router(users_router)

@@ -1,6 +1,10 @@
-from beanie import init_beanie
-from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorCollection, AsyncIOMotorDatabase
 import structlog
+from beanie import init_beanie
+from motor.motor_asyncio import (
+    AsyncIOMotorClient,
+    AsyncIOMotorCollection,
+    AsyncIOMotorDatabase,
+)
 
 from app.config.config import settings
 from app.models.users import Users
@@ -17,9 +21,7 @@ class DataBase:
         else:
             return None
 
-    def get_collection(
-        self, collection_name: str
-    ) -> AsyncIOMotorCollection | None:
+    def get_collection(self, collection_name: str) -> AsyncIOMotorCollection | None:
         db = self.get_db()
         if db:
             return db[collection_name]

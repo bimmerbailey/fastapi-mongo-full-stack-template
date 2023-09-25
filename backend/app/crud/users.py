@@ -1,18 +1,16 @@
-from motor.core import ClientSession
+from pymongo.client_session import ClientSession
 
-from app.utils import hash_password, verify
 from app.crud.base import CrudBase
 from app.models.users import Users
 from app.schemas.users import UserCreate, UserUpdate
+from app.utils import hash_password, verify
 
 
 class CRUDUser(CrudBase[Users, UserCreate, UserUpdate]):
     async def get_by_email(
         self, email: str, session: ClientSession | None = None
     ) -> Users:
-        return await self.model.find_one(
-            self.model.email == email, session=session
-        )
+        return await self.model.find_one(self.model.email == email, session=session)
 
     async def get_users(
         self,
@@ -20,12 +18,7 @@ class CRUDUser(CrudBase[Users, UserCreate, UserUpdate]):
         limit: int = 20,
         session: ClientSession | None = None,
     ) -> list[Users] | None:
-        return (
-            await self.model.find(session=session)
-            .skip(skip)
-            .limit(limit)
-            .to_list()
-        )
+        return await self.model.find(session=session).skip(skip).limit(limit).to_list()
 
     async def create(
         self, obj_in: UserCreate, session: ClientSession | None = None

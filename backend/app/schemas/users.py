@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Optional
 
-from beanie import PydanticObjectId
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -13,7 +12,6 @@ class UserBase(BaseModel):
 
 
 class UserOut(UserBase):
-    _id: PydanticObjectId = Field(None, alias="id")
     created_date: datetime
 
 
