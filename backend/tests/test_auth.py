@@ -11,7 +11,7 @@ auth_url = "/api/v1/login"
 
 
 @pytest.mark.anyio
-async def test_create_user(client: AsyncClient):
+async def test_create_user(client: AsyncClient, db):
     res = await client.post(
         users_url, json={"email": "hello123@gmail.com", "password": "password123"})
     new_user = schemas.users.UserOut(**res.json())
@@ -20,7 +20,7 @@ async def test_create_user(client: AsyncClient):
 
 
 @pytest.mark.anyio
-async def test_login_user(client: AsyncClient, regular_user: Users):
+async def test_login_user(db, client: AsyncClient, regular_user: Users):
     res = await client.post(
         auth_url, data={"username": regular_user.email, "password": regular_user.password})
     login_res = schemas.users.Token(**res.json())
@@ -36,7 +36,7 @@ async def test_login_user(client: AsyncClient, regular_user: Users):
 
 
 @pytest.mark.anyio
-async def test_admin(client: AsyncClient, admin_user: Users):
+async def test_admin(db, client: AsyncClient, admin_user: Users):
     res = await client.post(
         auth_url, data={"username": admin_user.email, "password": admin_user.password})
     login_res = schemas.users.Token(**res.json())
@@ -45,7 +45,7 @@ async def test_admin(client: AsyncClient, admin_user: Users):
 
 
 @pytest.mark.anyio
-async def test_regular_user(client: AsyncClient, regular_user: Users):
+async def test_regular_user(db, client: AsyncClient, regular_user: Users):
     res = await client.post(
         auth_url, data={"username": regular_user.email, "password": regular_user.password})
     login_res = schemas.users.Token(**res.json())
@@ -61,7 +61,7 @@ async def test_regular_user(client: AsyncClient, regular_user: Users):
     (None, 'password123', 422),
     ('michael@gmail.com', None, 422)
 ])
-async def test_incorrect_login(client: AsyncClient, email: str, password: str, status_code: int):
+async def test_incorrect_login(db, client: AsyncClient, email: str, password: str, status_code: int):
     res = await client.post(
         auth_url, data={"username": email, "password": password})
 
