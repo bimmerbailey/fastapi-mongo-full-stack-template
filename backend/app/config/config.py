@@ -1,6 +1,4 @@
-import os
-
-from pydantic import MongoDsn, ConfigDict
+from pydantic import ConfigDict, MongoDsn
 from pydantic_settings import BaseSettings
 
 
