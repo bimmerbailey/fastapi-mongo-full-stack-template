@@ -11,8 +11,8 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1 \
-    PYSETUP_PATH="/opt/pysetup" \
-    VENV_PATH="/opt/pysetup/.venv"
+    PYSETUP_PATH="/backend" \
+    VENV_PATH="/backend/.venv"
 
 
 # prepend poetry and venv to path
@@ -33,7 +33,8 @@ WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
 
 # install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
-RUN poetry install --without dev
+RUN poetry install --without dev --no-root
+COPY . .
 
 
 # `DEVELOPMENT`
@@ -43,22 +44,25 @@ WORKDIR $PYSETUP_PATH
 
 # copy in our built poetry + venv
 COPY --from=builder-base $POETRY_HOME $POETRY_HOME
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
+COPY --from=builder-base $PYSETUP_PATH .
 
 # quicker install as runtime deps are already installed
 RUN poetry install --with dev
 
-WORKDIR /backend
-
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD [\
+     "uvicorn", "app.main:init_app", "--host", "0.0.0.0", \
+     "--port", "8000", "--reload", "--no-access-log", "--factory"]
 
 
 # `PRODUCTION`
 FROM base as production
 ENV FASTAPI_ENV=production
-COPY --from=builder-base $PYSETUP_PATH $PYSETUP_PATH
-WORKDIR /backend
-COPY app ./app
+
+WORKDIR $PYSETUP_PATH
+
+COPY --from=builder-base $PYSETUP_PATH/.venv ./.venv
+COPY --from=builder-base $PYSETUP_PATH/app ./app
+
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
 

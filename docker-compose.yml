@@ -22,6 +22,7 @@ services:
     volumes:
     - "./backend/app:/backend/app"
     - "./backend/tests:/backend/tests"
+    - "./backend/development:/backend/development"
 
   mongo:
     image: mongo:6.0.5

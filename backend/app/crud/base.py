@@ -69,9 +69,7 @@ class CrudBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
         return await item.delete(session=session)
 
-    async def aggregate(
-        self, session: ClientSession | None, pipeline: list
-    ) -> dict:
+    async def aggregate(self, session: ClientSession | None, pipeline: list) -> dict:
         items = await self.model.aggregate(
             aggregation_pipeline=pipeline, session=session
         )
