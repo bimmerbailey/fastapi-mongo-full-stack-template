@@ -42,7 +42,7 @@ async def login(user_credentials: OAuth2PasswordRequestForm = Depends()):
     response.set_cookie(
         key="token",
         value=access_token,
-        expires=settings.access_token_expire_minutes * 60,
+        expires=settings.jwt_token_expires * 60,
         domain=settings.url_base,
         httponly=True,
         secure=True,
