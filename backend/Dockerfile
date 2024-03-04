@@ -64,5 +64,7 @@ WORKDIR $PYSETUP_PATH
 COPY --from=builder-base $PYSETUP_PATH/.venv ./.venv
 COPY --from=builder-base $PYSETUP_PATH/app ./app
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["gunicorn", "app.main:init_app()", "--workers", "4", \
+     "--worker-class", "uvicorn.workers.UvicornWorker", \
+     "--bind", "0.0.0.0:80"]
 
