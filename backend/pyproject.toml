@@ -29,6 +29,7 @@ faker = "^17.6.0"
 black = "^23.3.0"
 mypy = "^1.2.0"
 httpx = "^0.24.1"
+rich = "^13.7.1"
 
 [tool.isort]
 profile="black"

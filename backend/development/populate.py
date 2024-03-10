@@ -2,55 +2,46 @@ import asyncio
 from datetime import datetime, timezone
 
 import structlog
-from beanie import init_beanie
-from app.config.config import settings
-from app.models.users import Users
-from motor.motor_asyncio import AsyncIOMotorClient
-from app.utils import hash_password
 
-logger: structlog.stdlib.BoundLogger = structlog.getLogger(__name__)
+from app.dependencies.auth import get_crypt_context
+from app.dependencies.database import close_mongo_connection, connect_to_mongo
+from app.models.users import User
 
-
-async def connect_db():
-    kwargs = {
-        "username": settings.database_username,
-        "password": settings.database_password,
-    }
-    client = AsyncIOMotorClient(str(settings.database_url), **kwargs)
-    await init_beanie(client[settings.database_name], document_models=[Users])
+logger = structlog.stdlib.get_logger("development.populate")
 
 
-async def create_users():
+async def create_users(crypt_context=get_crypt_context()):
     logger.info("Dropping local Users collection")
-    await Users.delete_all()
+    await User.delete_all()
 
     users = [
-        Users(
+        User(
             **{
                 "email": "admin@your-app.com",
                 "first_name": "admin",
-                "password": hash_password("password"),
+                "password": crypt_context.hash("password"),
                 "created_date": datetime.now(tz=timezone.utc),
                 "is_admin": True,
             }
         ),
-        Users(
+        User(
             **{
                 "email": "user@your-app.com",
                 "first_name": "user",
-                "password": hash_password("password"),
+                "password": crypt_context.hash("password"),
                 "created_date": datetime.now(tz=timezone.utc),
             }
         ),
     ]
 
-    await Users.insert_many(users)
+    await User.insert_many(users)
     logger.info("Users added")
 
 
 async def create_dev_data():
-    await connect_db()
+    client = await connect_to_mongo()
     await create_users()
+    await close_mongo_connection(client)
 
 
 if __name__ == "__main__":

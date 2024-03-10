@@ -2,20 +2,22 @@ import structlog
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
-from app.config.config import settings
-from app.models.users import Users
+from app.config.settings import DatabaseSettings, get_db_settings
+from app.models.users import User
 
 logger = structlog.stdlib.get_logger(__name__)
 
 
-async def connect_to_mongo() -> AsyncIOMotorClient:
+async def connect_to_mongo(
+    settings: DatabaseSettings = get_db_settings(),
+) -> AsyncIOMotorClient:
     logger.info("Connecting to MongoDB...")
     kwargs = {
-        "username": settings.database_username,
-        "password": settings.database_password,
+        "username": settings.username,
+        "password": settings.password.get_secret_value(),
     }
     client = AsyncIOMotorClient(str(settings.database_url), **kwargs)
-    await init_beanie(database=client[settings.database_name], document_models=[Users])
+    await init_beanie(database=client[settings.name], document_models=[User])
     logger.info("Connected to MongoDB!")
     return client
 

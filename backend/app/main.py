@@ -1,14 +1,16 @@
 import os
 from contextlib import asynccontextmanager
+from typing import Sequence
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import structlog
 
-from app.config.config import settings
 from app.config.logging import setup_fastapi, setup_logging
-from app.database.init_db import close_mongo_connection, connect_to_mongo
+from app.dependencies.database import close_mongo_connection, connect_to_mongo
 from app.routes.auth import router as auth_router
 from app.routes.users import router as users_router
+from app.config.settings import get_app_settings, AppSettings
 
 
 @asynccontextmanager
@@ -18,8 +20,17 @@ async def lifespan(app: FastAPI):
     await close_mongo_connection(client)
 
 
-def init_app():
-    setup_logging(json_logs=settings.json_logs, log_level=settings.log_level)
+def init_app(app_settings: AppSettings = get_app_settings()):
+    log_renderer: Sequence[structlog.types.Processor]
+    if app_settings.debug:
+        log_renderer = [structlog.dev.ConsoleRenderer()]
+    else:
+        log_renderer = [
+            structlog.processors.format_exc_info,
+            structlog.processors.JSONRenderer(),
+        ]
+    log_level = "DEBUG" if app_settings.debug else "INFO"
+    setup_logging(processors=log_renderer, log_level=log_level)
 
     app = FastAPI(
         docs_url="/api/docs",

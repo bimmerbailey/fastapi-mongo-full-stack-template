@@ -1,12 +1,10 @@
-from motor.motor_asyncio import AsyncIOMotorClient
 import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
+from motor.motor_asyncio import AsyncIOMotorClient
 
-
+from app.database.init_db import close_mongo_connection, connect_to_mongo
 from app.main import init_app
-from app.database.init_db import connect_to_mongo, close_mongo_connection
-from app import oauth
 from app.models.users import Users
 
 
@@ -44,7 +42,6 @@ async def client(app: FastAPI) -> AsyncClient:
 
 @pytest.fixture
 async def regular_user(client: AsyncClient):
-
     user_data = {"email": "user@gmail.com", "password": "password123"}
     res = await client.post("api/v1/users", json=user_data)
 
@@ -57,7 +54,6 @@ async def regular_user(client: AsyncClient):
 
 @pytest.fixture
 async def admin_user(client: AsyncClient):
-
     user_data = {
         "email": "admin@gmail.com",
         "password": "password123",
