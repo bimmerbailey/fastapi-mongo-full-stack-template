@@ -4,11 +4,11 @@ import structlog
 from email_validator import EmailNotValidError, validate_email
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.dependencies.auth import CryptContext, get_crypt_context
+from app.dependencies.auth import CryptContext, get_crypt_context, get_current_user
 from app.models.users import User
 from app.schemas.users import UserCreate, UserOut
 
-router = APIRouter(prefix="/api/v1/users", tags=["Users"])
+router = APIRouter(prefix="/api/v1/users", tags=["Users"], dependencies=[Depends(get_current_user)])
 logger: structlog.stdlib.BoundLogger = structlog.getLogger(__name__)
 
 

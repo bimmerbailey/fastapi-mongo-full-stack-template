@@ -2,10 +2,18 @@ import pytest
 from fastapi import FastAPI
 from httpx import AsyncClient
 from motor.motor_asyncio import AsyncIOMotorClient
+from typing import Callable, Awaitable, Dict
 
-from app.database.init_db import close_mongo_connection, connect_to_mongo
+from jose import jwt
+
+from app.dependencies.database import connect_to_mongo, close_mongo_connection
+from app.config.settings import DatabaseSettings, get_db_settings
 from app.main import init_app
-from app.models.users import Users
+from app.config.settings import JwtSettings, get_jwt_settings
+from app.models.users import User
+from app.dependencies.auth import create_access_token, get_crypt_context, CryptContext
+from app.dependencies.database import connect_to_mongo, close_mongo_connection
+from app.schemas.users import Token, TokenData
 
 
 @pytest.fixture()
@@ -13,9 +21,14 @@ def anyio_backend():
     return "asyncio"
 
 
+@pytest.fixture()
+def db_settings() -> DatabaseSettings:
+    return DatabaseSettings()
+
+
 @pytest.fixture
-async def motor_client(anyio_backend) -> AsyncIOMotorClient:
-    return await connect_to_mongo()
+async def motor_client(anyio_backend, db_settings) -> AsyncIOMotorClient:
+    return await connect_to_mongo(db_settings)
 
 
 @pytest.fixture
@@ -41,39 +54,86 @@ async def client(app: FastAPI) -> AsyncClient:
 
 
 @pytest.fixture
-async def regular_user(client: AsyncClient):
-    user_data = {"email": "user@gmail.com", "password": "password123"}
-    res = await client.post("api/v1/users", json=user_data)
-
-    assert res.status_code == 201
-
-    new_user = res.json()
-    new_user["password"] = user_data["password"]
-    return Users(**new_user)
+def crpyt() -> CryptContext:
+    return get_crypt_context()
 
 
 @pytest.fixture
-async def admin_user(client: AsyncClient):
-    user_data = {
-        "email": "admin@gmail.com",
-        "password": "password123",
-        "is_admin": "true",
+def jwt_settings() -> JwtSettings:
+    return get_jwt_settings()
+
+
+@pytest.fixture
+def create_user(db, crpyt):
+    async def _create_user(
+        password="password", email="user@example.com", is_admin=False
+    ) -> User:
+        user = User(
+            email=email,
+            password=crpyt.hash(password),
+            first_name="test",
+            last_name="user",
+            is_admin=is_admin,
+        )
+        await user.save()
+        return user
+
+    return _create_user
+
+
+@pytest.fixture
+def authorize_client(client: AsyncClient):
+    async def _authorize_client(user: User, password: str):
+        return await client.post(
+            "api/v1/login", data={"username": user.email, "password": password}
+        )
+    return _authorize_client
+
+
+@pytest.fixture
+async def authorized_admin_client(client, create_user, jwt_settings, authorize_client
+) -> AsyncClient:
+    user = await create_user(is_admin=True)
+    res = await authorize_client(user, "password")
+
+    login_res = Token(**res.json())
+    payload = jwt.decode(
+        login_res.access_token,
+        jwt_settings.secret_key.get_secret_value(),
+        algorithms=[jwt_settings.algorithm],
+    )
+
+    user_id = payload.get("user_id")
+    token_data = TokenData(id=user_id)
+    assert token_data
+
+    client.headers = {
+        **client.headers,
+        "Authorization": f"Bearer {login_res.access_token}",
     }
-    res = await client.post("api/v1/users", json=user_data)
-    assert res.status_code == 201
-
-    new_user = res.json()
-    new_user["password"] = user_data["password"]
-    return Users(**new_user)
+    yield client
 
 
 @pytest.fixture
-def token(test_user):
-    return oauth.create_access_token({"user_id": test_user["id"]})
+async def authorized_regular_client(
+    client: AsyncClient, create_user, jwt_settings, authorize_client
+) -> AsyncClient:
+    user = await create_user(is_admin=False)
+    res = await authorize_client(user, "password")
 
+    login_res = Token(**res.json())
+    payload = jwt.decode(
+        login_res.access_token,
+        jwt_settings.secret_key.get_secret_value(),
+        algorithms=[jwt_settings.algorithm],
+    )
 
-@pytest.fixture
-def authorized_client(client: AsyncClient, token: str):
-    client.headers = {**client.headers, "Authorization": f"Bearer {token}"}
+    user_id = payload.get("user_id")
+    token_data = TokenData(id=user_id)
+    assert token_data
 
-    return client
+    client.headers = {
+        **client.headers,
+        "Authorization": f"Bearer {login_res.access_token}",
+    }
+    yield client

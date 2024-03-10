@@ -25,6 +25,7 @@ class DatabaseSettings(BaseSettings):
                 f"mongodb://{self.username}:{self.password.get_secret_value()}@"
                 f"{self.hostname}:{self.port}/{self.name}"
             )
+        print(os.environ.get("DATABASE_URL"))
         return MongoDsn(os.environ.get("DATABASE_URL"))
 
 
