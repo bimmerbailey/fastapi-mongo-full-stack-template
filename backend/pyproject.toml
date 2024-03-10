@@ -4,20 +4,21 @@ version = "0.1.0"
 description = "Boilerplate backend for full stack app"
 authors = ["Michael Bailey <mbailey1302@gmail.com>"]
 license = "Propietary"
+packages = [{ include = "app" }]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-structlog = "^23.1.0"
+structlog = "^24.1.0"
 python-jose = "^3.3.0"
-uvicorn = "^0.23.1"
+uvicorn = "^0.27.1"
 gunicorn = "^21.2.0"
 beanie = "^1.20.0"
 asgi-correlation-id = "^4.2.0"
 passlib = {version = "^1.7.4", extras = ["bcrypt"]}
-pydantic = {version = "^2.0.3", extras = ["email"]}
+pydantic = {version = "^2.4.2", extras = ["email"]}
 pydantic-settings = "^2.0.2"
-python-multipart = "^0.0.6"
-fastapi = "^0.103.1"
+python-multipart = "^0.0.9"
+fastapi = "^0.110.0"
 
 
 [tool.poetry.group.dev.dependencies]

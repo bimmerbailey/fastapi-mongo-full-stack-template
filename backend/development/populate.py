@@ -3,19 +3,21 @@ from datetime import datetime, timezone
 
 import structlog
 from beanie import init_beanie
-from config.config import settings
-from models.users import Users
+from app.config.config import settings
+from app.models.users import Users
 from motor.motor_asyncio import AsyncIOMotorClient
-from utils import hash_password
+from app.utils import hash_password
 
 logger: structlog.stdlib.BoundLogger = structlog.getLogger(__name__)
 
 
 async def connect_db():
-    db_client = AsyncIOMotorClient(
-        settings.database_url, maxPoolSize=10, minPoolSize=10
-    )
-    await init_beanie(db_client[settings.database_name], document_models=[Users])
+    kwargs = {
+        "username": settings.database_username,
+        "password": settings.database_password,
+    }
+    client = AsyncIOMotorClient(str(settings.database_url), **kwargs)
+    await init_beanie(client[settings.database_name], document_models=[Users])
 
 
 async def create_users():

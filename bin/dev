@@ -29,7 +29,7 @@ dump() {
 }
 
 dev_data () {
-  docker compose run --rm backend python3 app/dev_data.py
+  docker compose run --rm backend poetry run python development/populate.py
 }
 
 shell() {
