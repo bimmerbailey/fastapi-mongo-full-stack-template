@@ -2,8 +2,7 @@
 docker compose up -d backend
 docker compose run \
   --entrypoint "python3 -m pytest" \
-  -e "DATABASE_NAME=test_your_app" \
-  -e "DATABASE_URL=mongodb://mongo:27017/test_your_app"\
+  -e "DATABASE_NAME=test_your_app"\
   --rm \
   backend \
   --disable-warnings -p no:cacheprovider "$@"

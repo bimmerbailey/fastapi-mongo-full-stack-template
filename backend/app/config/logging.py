@@ -1,6 +1,32 @@
+"""
+MIT License
+
+Copyright (c) 2023 Thomas GAUDIN
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
+
+
 import logging
 import sys
 import time
+from typing import Sequence
 
 import structlog
 from asgi_correlation_id import CorrelationIdMiddleware
@@ -9,7 +35,7 @@ from fastapi import FastAPI, Request, Response
 from structlog.types import EventDict, Processor
 from uvicorn.protocols.utils import get_path_with_query_string
 
-access_logger: structlog.stdlib.BoundLogger = structlog.getLogger("api.access")
+access_logger = structlog.stdlib.get_logger("api.access")
 
 
 # https://github.com/hynek/structlog/issues/35#issuecomment-591321744
@@ -33,7 +59,10 @@ def drop_color_message_key(_, __, event_dict: EventDict) -> EventDict:
     return event_dict
 
 
-def setup_logging(json_logs: bool = False, log_level: str = "INFO"):
+def setup_logging(
+    processors: Sequence[Processor],
+    log_level: str = logging.INFO,
+):
     timestamper = structlog.processors.TimeStamper(fmt="iso")
 
     shared_processors: list[Processor] = [
@@ -47,14 +76,6 @@ def setup_logging(json_logs: bool = False, log_level: str = "INFO"):
         structlog.processors.StackInfoRenderer(),
     ]
 
-    if json_logs:
-        # We rename the `event` key to `message` only in JSON logs, as Datadog looks for the
-        # `message` key but the pretty ConsoleRenderer looks for `event`
-        shared_processors.append(rename_event_key)
-        # Format the exception only for JSON logs, as we want to pretty-print them when
-        # using the ConsoleRenderer
-        shared_processors.append(structlog.processors.format_exc_info)
-
     structlog.configure(
         processors=shared_processors
         + [
@@ -65,21 +86,14 @@ def setup_logging(json_logs: bool = False, log_level: str = "INFO"):
         cache_logger_on_first_use=True,
     )
 
-    log_renderer: structlog.types.Processor
-    if json_logs:
-        log_renderer = structlog.processors.JSONRenderer()
-    else:
-        log_renderer = structlog.dev.ConsoleRenderer()
-
     formatter = structlog.stdlib.ProcessorFormatter(
         # These run ONLY on `logging` entries that do NOT originate within
         # structlog.
         foreign_pre_chain=shared_processors,
         # These run on ALL entries after the pre_chain is done.
         processors=[
-            # Remove _record & _from_structlog.
             structlog.stdlib.ProcessorFormatter.remove_processors_meta,
-            log_renderer,
+            *processors,
         ],
     )
 
@@ -88,7 +102,7 @@ def setup_logging(json_logs: bool = False, log_level: str = "INFO"):
     handler.setFormatter(formatter)
     root_logger = logging.getLogger()
     root_logger.addHandler(handler)
-    root_logger.setLevel(log_level.upper())
+    root_logger.setLevel(log_level)
 
     for _log in ["uvicorn", "uvicorn.error"]:
         # Clear the log handlers for uvicorn loggers, and enable propagation
