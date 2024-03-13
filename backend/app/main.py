@@ -39,16 +39,10 @@ def init_app(app_settings: AppSettings = get_app_settings()):
         openapi_url="/api/openapi.json",
         lifespan=lifespan,
     )
-    env = os.environ.get("ENV", "dev")
-
-    if env != "dev":
-        app = FastAPI(docs_url=None, redoc_url=None)
-
-    origins = ["*"]
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
