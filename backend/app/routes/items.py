@@ -1,20 +1,36 @@
+from itertools import count
 from typing import Annotated
 
 import structlog
 from fastapi import APIRouter, Security, Depends, HTTPException, status, Body
+from pydantic import BaseModel
 
 from app.dependencies.auth import get_current_user
 from app.models import Item, User
 from app.schemas.items import ItemUpdate
+from app.schemas.base import BaseGet
 
 router = APIRouter(prefix="/api/v1/items", tags=["Items"])
 logger = structlog.stdlib.get_logger(__name__)
 
 
-@router.get("", response_model=list[Item])
-async def get_items(current_user: Annotated[User, Security(get_current_user)]):
-    # FIXME: Pagination
-    return await Item.find({}).to_list(None)
+class PaginationReturn(BaseModel):
+    items: list[Item]
+    count: int
+
+
+@router.get("", response_model=PaginationReturn)
+async def get_items(
+    current_user: Annotated[User, Security(get_current_user)],
+    filters: Annotated[BaseGet, Depends()],
+):
+    items = Item.find({})
+    item_count = await items.count()
+    items = await items.skip(filters.skip).limit(filters.limit).to_list()
+    return PaginationReturn(
+        items=items,
+        count=item_count,
+    )
 
 
 # FIXME: Actual schema
