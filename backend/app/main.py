@@ -10,6 +10,7 @@ from app.config.logging import setup_fastapi, setup_logging
 from app.dependencies.database import close_mongo_connection, connect_to_mongo
 from app.routes.auth import router as auth_router
 from app.routes.users import router as users_router
+from app.routes.items import router as items_router
 from app.config.settings import get_app_settings, AppSettings
 
 
@@ -38,16 +39,10 @@ def init_app(app_settings: AppSettings = get_app_settings()):
         openapi_url="/api/openapi.json",
         lifespan=lifespan,
     )
-    env = os.environ.get("ENV", "dev")
-
-    if env != "dev":
-        app = FastAPI(docs_url=None, redoc_url=None)
-
-    origins = ["*"]
 
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=origins,
+        allow_origins=["*"],
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
@@ -55,5 +50,6 @@ def init_app(app_settings: AppSettings = get_app_settings()):
     setup_fastapi(app)
     app.include_router(auth_router)
     app.include_router(users_router)
+    app.include_router(items_router)
 
     return app

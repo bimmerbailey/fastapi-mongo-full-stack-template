@@ -42,7 +42,7 @@ function prevPage() {
   sendEmit(modelValue.value - 1)
 }
 function nextPage() {
-  if (modelValue.value >= Math.floor(totalRows.value / perPage.value)) return
+  if (modelValue.value >= Math.ceil(totalRows.value / perPage.value)) return
   sendEmit(modelValue.value + 1)
 }
 </script>
@@ -62,7 +62,7 @@ function nextPage() {
     <p class="text-xs">
       {{ modelValue }}
       <span class="mx-0.25">/</span>
-      {{ Math.floor(totalRows / perPage) }}
+      {{ Math.ceil(totalRows / perPage) }}
     </p>
 
     <base-button @click="nextPage" color="transparent" small>
@@ -71,7 +71,7 @@ function nextPage() {
       </slot>
     </base-button>
     <base-button
-      @click="sendEmit(Math.floor(totalRows / perPage))"
+      @click="sendEmit(Math.ceil(totalRows / perPage))"
       color="transparent"
       small
     >

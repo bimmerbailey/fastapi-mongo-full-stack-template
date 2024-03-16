@@ -16,4 +16,9 @@ export default [
     label: 'Users',
     icon: mdiAccountCircle,
   },
+  {
+    to: '/items',
+    label: 'Items',
+    icon: mdiAccountCircle,
+  },
 ]

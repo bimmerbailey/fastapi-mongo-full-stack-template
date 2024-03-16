@@ -1,11 +1,12 @@
 import asyncio
 from datetime import datetime, timezone
 
+import faker
 import structlog
 
 from app.dependencies.auth import get_crypt_context
 from app.dependencies.database import close_mongo_connection, connect_to_mongo
-from app.models.users import User
+from app.models import User, Item
 
 logger = structlog.stdlib.get_logger("development.populate")
 
@@ -38,9 +39,23 @@ async def create_users(crypt_context=get_crypt_context()):
     logger.info("Users added")
 
 
+async def create_items(item_count=50):
+    fake = faker.Faker()
+    logger.info("Dropping Item collection")
+    await Item.delete_all()
+    for _ in range(item_count):
+        await Item(
+            name=fake.word(),
+            description=fake.sentence(),
+            cost=fake.pyfloat(),
+            quantity=fake.pyint(0, 100),
+        ).save()
+
+
 async def create_dev_data():
     client = await connect_to_mongo()
     await create_users()
+    await create_items()
     await close_mongo_connection(client)
 
 
