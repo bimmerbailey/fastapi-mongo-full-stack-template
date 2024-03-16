@@ -34,6 +34,15 @@ const router = createRouter({
     },
     {
       meta: {
+        title: 'Items',
+        requiresAuth: true,
+      },
+      path: '/items',
+      name: 'items',
+      component: () => import('@/views/ItemsView.vue'),
+    },
+    {
+      meta: {
         title: 'Login',
       },
       path: '/login',
