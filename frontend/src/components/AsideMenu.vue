@@ -33,7 +33,7 @@ const asideLgCloseClick = (event: Event) => {
     @aside-lg-close-click="asideLgCloseClick"
   />
   <OverlayLayer
-    :show="isAsideLgActive"
+    v-show="isAsideLgActive"
     z-index="z-30"
     @overlay-click="asideLgCloseClick"
   />
