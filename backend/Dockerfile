@@ -1,5 +1,5 @@
 # BASE
-FROM python:3.11.2-slim-bullseye as base
+FROM python:3.12-slim-bullseye as base
 
 # python
 ENV PYTHONUNBUFFERED=1 \
@@ -7,7 +7,7 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=1.7.1 \
+    POETRY_VERSION=1.8.2 \
     POETRY_HOME="/opt/poetry" \
     POETRY_VIRTUALENVS_IN_PROJECT=true \
     POETRY_NO_INTERACTION=1 \
