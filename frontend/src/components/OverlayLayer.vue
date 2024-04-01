@@ -2,6 +2,10 @@
 import { useStyleStore } from '@/stores/style'
 
 defineProps({
+  show: {
+    type: Boolean,
+    default: false,
+  },
   zIndex: {
     type: String,
     default: 'z-50',
@@ -11,8 +15,6 @@ defineProps({
     default: 'flex',
   },
 })
-
-// const emit = defineEmits(['overlay-click'])
 
 const emit = defineEmits<{
   (e: 'overlay-click', event: Event): void
@@ -39,6 +41,7 @@ const styleStore = useStyleStore()
       leave-to-class="opacity-0"
     >
       <div
+        v-show="show"
         class="absolute inset-0 bg-gradient-to-tr opacity-90 dark:from-gray-700 dark:via-gray-900 dark:to-gray-700"
         :class="styleStore.overlayStyle"
         @click="overlayClick"

@@ -54,7 +54,6 @@ async function getItems(): Promise<null> {
   return await itemApi
     .getItems(searchTerm.value, perPage.value, offset)
     .then((res: PaginatedReturn) => {
-      console.log(res)
       itemCount.value = res.count
       products.value = res.items
     })
