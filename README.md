@@ -2,11 +2,11 @@
 
 ## Current Container Setup
 
-| Container Name | Image                | Purpose            |
-|----------------|----------------------|--------------------|
-| mongo          | mongo:6.0.3          | database           |
-| backend        | python:3.11.0-alpine | backend (FastAPI)  |              |
-| frontend       | node:18.2-alpine3.15 | vue.js application |
+| Container Name | Image                                    | Purpose            |
+|----------------|------------------------------------------|--------------------|
+| mongo          | mongo:6.0.5                              | database           |
+| backend        | python:3.11.2-slim-bullseye              | backend (FastAPI)  |              |
+| frontend       | node:18.2-alpine3.15/nginx:1.23.3-alpine | vue.js application |
 
 ## Project Start
 
