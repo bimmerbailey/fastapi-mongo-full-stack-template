@@ -15,11 +15,10 @@ gunicorn = "^21.2.0"
 beanie = "^1.20.0"
 asgi-correlation-id = "^4.2.0"
 passlib = {version = "^1.7.4", extras = ["bcrypt"]}
-pydantic = {version = "^2.4.2", extras = ["email"]}
+pydantic = {version = "^2.6.4", extras = ["email"]}
 pydantic-settings = "^2.0.2"
 python-multipart = "^0.0.9"
 fastapi = "^0.110.0"
-
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
