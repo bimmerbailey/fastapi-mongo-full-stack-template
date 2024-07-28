@@ -3,7 +3,7 @@ from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.config.settings import DatabaseSettings, get_db_settings
-from app.models import User, Item
+from app.models import Item, User
 
 logger = structlog.stdlib.get_logger(__name__)
 

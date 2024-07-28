@@ -1,17 +1,16 @@
-import os
 from contextlib import asynccontextmanager
 from typing import Sequence
 
+import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import structlog
 
 from app.config.logging import setup_fastapi, setup_logging
+from app.config.settings import AppSettings, get_app_settings
 from app.dependencies.database import close_mongo_connection, connect_to_mongo
 from app.routes.auth import router as auth_router
-from app.routes.users import router as users_router
 from app.routes.items import router as items_router
-from app.config.settings import get_app_settings, AppSettings
+from app.routes.users import router as users_router
 
 
 @asynccontextmanager
@@ -34,10 +33,9 @@ def init_app(app_settings: AppSettings = get_app_settings()):
     setup_logging(processors=log_renderer, log_level=log_level)
 
     app = FastAPI(
-        docs_url="/api/docs",
-        redoc_url="/api/redoc",
-        openapi_url="/api/openapi.json",
+        root_path="/api",
         lifespan=lifespan,
+        debug=True if app_settings.debug else False,
     )
 
     app.add_middleware(

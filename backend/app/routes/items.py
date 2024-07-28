@@ -1,14 +1,13 @@
-from itertools import count
 from typing import Annotated
 
 import structlog
-from fastapi import APIRouter, Security, Depends, HTTPException, status, Body
+from fastapi import APIRouter, Body, Depends, HTTPException, Security, status
 from pydantic import BaseModel
 
 from app.dependencies.auth import get_current_user
 from app.models import Item, User
-from app.schemas.items import ItemUpdate
 from app.schemas.base import BaseGet
+from app.schemas.items import ItemUpdate
 
 router = APIRouter(prefix="/api/v1/items", tags=["Items"])
 logger = structlog.stdlib.get_logger(__name__)

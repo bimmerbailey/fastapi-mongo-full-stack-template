@@ -2,7 +2,7 @@ from typing import Annotated
 
 import structlog
 from email_validator import EmailNotValidError, validate_email
-from fastapi import APIRouter, Security, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Security, status
 
 from app.dependencies.auth import CryptContext, get_crypt_context, get_current_user
 from app.models.users import User
