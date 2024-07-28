@@ -16,7 +16,7 @@ from app.dependencies.auth import (
 from app.models.users import User
 from app.schemas.users import Token, UserBase
 
-router = APIRouter(tags=["Authentication"], prefix="/api/v1")
+router = APIRouter(tags=["Authentication"], prefix="/v1")
 logger = structlog.stdlib.get_logger(__name__)
 
 
