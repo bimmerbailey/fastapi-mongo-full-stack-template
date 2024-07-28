@@ -9,7 +9,7 @@ from app.models.users import User
 from app.schemas.users import UserCreate, UserOut
 
 router = APIRouter(
-    prefix="/api/v1/users", tags=["Users"], dependencies=[Security(get_current_user)]
+    prefix="/v1/users", tags=["Users"], dependencies=[Security(get_current_user)]
 )
 logger: structlog.stdlib.BoundLogger = structlog.getLogger(__name__)
 

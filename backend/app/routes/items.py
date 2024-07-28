@@ -9,7 +9,7 @@ from app.models import Item, User
 from app.schemas.base import BaseGet
 from app.schemas.items import ItemUpdate
 
-router = APIRouter(prefix="/api/v1/items", tags=["Items"])
+router = APIRouter(prefix="/v1/items", tags=["Items"])
 logger = structlog.stdlib.get_logger(__name__)
 
 
