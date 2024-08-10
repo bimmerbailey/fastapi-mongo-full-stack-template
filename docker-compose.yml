@@ -3,11 +3,12 @@ services:
 
   frontend:
     build: 
-      context: ./frontend
+      context: ./new_ui
       target: development
     volumes:
-      - "./frontend/src:/frontend/src"
-      - "./frontend/public:/frontend/public"
+      - "./new_ui/src:/frontend/src"
+      - "./new_ui/public:/frontend/public"
+      - "./new_ui/e2e:/frontend/e2e"
     ports:
       - "3000:3000"
   
