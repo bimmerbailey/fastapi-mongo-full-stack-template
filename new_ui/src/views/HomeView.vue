@@ -1,14 +1,13 @@
 <script setup lang="ts">
+import LoginView from '@/views/LoginView.vue'
 import BaseCard from '@/components/bases/BaseCard.vue'
 </script>
 
 <template>
-  <!-- TODO: Set number of columns -->
-  <div class="flex items-center justify-center min-h-screen">
-    <div class="w-full max-w-lg px-10 py-8 mx-auto bg-white rounded-lg shadow-xl">
-      <base-card>
-        <div class="text-center">Here we see the card</div>
-      </base-card>
-    </div>
+  <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-6">
+    <login-view />
+    <base-card>
+      <div class="text-center">Here we see another card</div>
+    </base-card>
   </div>
 </template>
