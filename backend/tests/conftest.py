@@ -1,18 +1,19 @@
+from typing import AsyncIterable
+
 import pytest
 from fastapi import FastAPI
-from httpx import AsyncClient
-from motor.motor_asyncio import AsyncIOMotorClient
-from typing import Callable, Awaitable, Dict
-
+from httpx import ASGITransport, AsyncClient
 from jose import jwt
 
-from app.dependencies.database import connect_to_mongo, close_mongo_connection
-from app.config.settings import DatabaseSettings, get_db_settings
+from app.config.settings import (
+    DatabaseSettings,
+    JwtSettings,
+    get_jwt_settings,
+)
+from app.dependencies.auth import CryptContext, get_crypt_context
+from app.dependencies.database import close_mongo_connection, connect_to_mongo
 from app.main import init_app
-from app.config.settings import JwtSettings, get_jwt_settings
 from app.models.users import User
-from app.dependencies.auth import create_access_token, get_crypt_context, CryptContext
-from app.dependencies.database import connect_to_mongo, close_mongo_connection
 from app.schemas.users import Token, TokenData
 
 
@@ -27,12 +28,8 @@ def db_settings() -> DatabaseSettings:
 
 
 @pytest.fixture
-async def motor_client(anyio_backend, db_settings) -> AsyncIOMotorClient:
-    return await connect_to_mongo(db_settings)
-
-
-@pytest.fixture
-async def db(anyio_backend: str, motor_client: AsyncIOMotorClient):
+async def db(anyio_backend: str):
+    motor_client = await connect_to_mongo()
     database = motor_client.get_default_database()
     try:
         yield database
@@ -48,8 +45,10 @@ async def app() -> FastAPI:
 
 
 @pytest.fixture
-async def client(app: FastAPI) -> AsyncClient:
-    async with AsyncClient(app=app, base_url="http://test-client:8000") as client:
+async def client(app: FastAPI) -> AsyncIterable[AsyncClient]:
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test-client:8000"
+    ) as client:
         yield client
 
 
@@ -87,12 +86,14 @@ def authorize_client(client: AsyncClient):
         return await client.post(
             "api/v1/login", data={"username": user.email, "password": password}
         )
+
     return _authorize_client
 
 
 @pytest.fixture
-async def authorized_admin_client(client, create_user, jwt_settings, authorize_client
-) -> AsyncClient:
+async def authorized_admin_client(
+    client, create_user, jwt_settings, authorize_client
+) -> AsyncIterable[AsyncClient]:
     user = await create_user(is_admin=True)
     res = await authorize_client(user, "password")
 
@@ -117,7 +118,7 @@ async def authorized_admin_client(client, create_user, jwt_settings, authorize_c
 @pytest.fixture
 async def authorized_regular_client(
     client: AsyncClient, create_user, jwt_settings, authorize_client
-) -> AsyncClient:
+) -> AsyncIterable[AsyncClient]:
     user = await create_user(is_admin=False)
     res = await authorize_client(user, "password")
 

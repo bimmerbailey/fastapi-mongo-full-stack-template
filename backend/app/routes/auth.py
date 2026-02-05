@@ -33,7 +33,7 @@ async def login(
         crypt_context.dummy_verify()
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid Credentials",
+            detail="Invalid Credentials",
         )
 
     access_token = create_access_token(

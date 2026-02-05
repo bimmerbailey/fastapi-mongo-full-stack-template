@@ -1,62 +1,59 @@
 # BASE
-FROM python:3.12-slim-bullseye as base
+FROM python:3.12-slim-bullseye AS base
 
-# python
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PIP_NO_CACHE_DIR=off \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=1.8.2 \
-    POETRY_HOME="/opt/poetry" \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    POETRY_NO_INTERACTION=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
     PYSETUP_PATH="/backend" \
     VENV_PATH="/backend/.venv"
 
-
-# prepend poetry and venv to path
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
+# prepend venv to path
+ENV PATH="$VENV_PATH/bin:$PATH"
 
 # `builder-base`
-FROM base as builder-base
+FROM base AS builder-base
 RUN apt-get update \
     && apt-get install --no-install-recommends -y \
         curl \
         build-essential
 
-# install poetry - respects $POETRY_VERSION & $POETRY_HOME
-RUN curl -sSL https://install.python-poetry.org | python3 -
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:0.9.30 /uv /uvx /bin/
 
-# copy project requirement files here to ensure they will be cached.
 WORKDIR $PYSETUP_PATH
-COPY poetry.lock pyproject.toml ./
+COPY pyproject.toml uv.lock ./
 
-# install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
-RUN poetry install --without dev --no-root
+# Create venv and install dependencies
+RUN uv venv $VENV_PATH && \
+    uv sync --frozen --no-dev --no-install-project
+
 COPY . .
 
 
 # `DEVELOPMENT`
-FROM base as development
+FROM base AS development
 ENV FASTAPI_ENV=development
 WORKDIR $PYSETUP_PATH
 
-# copy in our built poetry + venv
-COPY --from=builder-base $POETRY_HOME $POETRY_HOME
-COPY --from=builder-base $PYSETUP_PATH .
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# quicker install as runtime deps are already installed
-RUN poetry install --with dev
+COPY pyproject.toml uv.lock ./
+COPY app ./app
+COPY tests ./tests
+COPY development ./development
+
+RUN uv venv $VENV_PATH && \
+    uv sync --frozen
 
 EXPOSE 8000
-CMD [\
-     "uvicorn", "app.main:init_app", "--host", "0.0.0.0", \
+CMD ["uvicorn", "app.main:init_app", "--host", "0.0.0.0", \
      "--port", "8000", "--reload", "--no-access-log", "--factory"]
 
 
 # `PRODUCTION`
-FROM base as production
+FROM base AS production
 ENV FASTAPI_ENV=production
 
 WORKDIR $PYSETUP_PATH
@@ -67,4 +64,3 @@ COPY --from=builder-base $PYSETUP_PATH/app ./app
 CMD ["gunicorn", "app.main:init_app()", "--workers", "4", \
      "--worker-class", "uvicorn.workers.UvicornWorker", \
      "--bind", "0.0.0.0:80"]
-

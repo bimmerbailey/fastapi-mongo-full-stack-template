@@ -22,7 +22,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-
 import logging
 import sys
 import time
@@ -144,8 +143,8 @@ def setup_fastapi(app: FastAPI):
         structlog.contextvars.bind_contextvars(request_id=request_id)
 
         start_time = time.perf_counter_ns()
-        # If the call_next raises an error, we still want to return our own 500 response,
-        # so we can add headers to it (process time, request ID...)
+        # If the call_next raises an error, we still want to return our own 500
+        # response, so we can add headers to it (process time, request ID...)
         response = Response(status_code=500)
         try:
             response = await call_next(request)
@@ -161,7 +160,8 @@ def setup_fastapi(app: FastAPI):
             client_port = request.client.port
             http_method = request.method
             http_version = request.scope["http_version"]
-            # Recreate the Uvicorn access log format, but add all parameters as structured information
+            # Recreate the Uvicorn access log format, but add all parameters
+            # as structured information
             access_logger.info(
                 "Handled request",
                 path=url,
@@ -175,8 +175,10 @@ def setup_fastapi(app: FastAPI):
             response.headers["X-Process-Time"] = str(process_time / 10**9)
             return response
 
-    # This middleware must be placed after the logging, to populate the context with the request ID
+    # This middleware must be placed after the logging, to populate the
+    # context with the request ID
     # NOTE: Why last??
-    # Answer: middlewares are applied in the reverse order of when they are added (you can verify this
-    # by debugging `app.middleware_stack` and recursively drilling down the `app` property).
+    # Answer: middlewares are applied in the reverse order of when they are
+    # added (you can verify this by debugging `app.middleware_stack` and
+    # recursively drilling down the `app` property).
     app.add_middleware(CorrelationIdMiddleware)

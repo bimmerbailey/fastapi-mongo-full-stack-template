@@ -79,6 +79,6 @@ async def delete_item(
     db_item = await Item.get(item_id)
     if not db_item:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=f"Item not found"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Item not found"
         )
     await db_item.delete()

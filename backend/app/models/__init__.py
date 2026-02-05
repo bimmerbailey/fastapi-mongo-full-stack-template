@@ -1,4 +1,4 @@
-from .items import Item
-from .users import User
+from app.models.items import Item
+from app.models.users import User
 
-__all__ = {"User", "Item"}
+__all__ = ["User", "Item"]

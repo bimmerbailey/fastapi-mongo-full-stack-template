@@ -6,7 +6,7 @@ import structlog
 
 from app.dependencies.auth import get_crypt_context
 from app.dependencies.database import close_mongo_connection, connect_to_mongo
-from app.models import User, Item
+from app.models import Item, User
 
 logger = structlog.stdlib.get_logger("development.populate")
 

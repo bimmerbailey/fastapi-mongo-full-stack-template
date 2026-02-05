@@ -27,7 +27,7 @@ services:
     - "./backend/development:/backend/development"
 
   mongo:
-    image: mongo:6.0.5
+    image: mongo:8.2.4
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongod
       MONGO_INITDB_ROOT_PASSWORD: Password123!
