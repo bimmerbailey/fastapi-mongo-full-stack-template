@@ -51,5 +51,6 @@
     "unplugin-vue-components": "^0.22.12",
     "vite": "^5.2.7",
     "vue-tsc": "^1.7.6"
-  }
+  },
+  "packageManager": "yarn@3.3.0+sha256.bbfc6cc3362afbcb0ce39ee8f36fb2b62ce9834b20d6aeee5c1f481269b52238"
 }
